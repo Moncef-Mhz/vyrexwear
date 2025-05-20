@@ -28,7 +28,7 @@ export const InsertCategorySchema = createInsertSchema(categories, {
   name: z.string().min(1, "Name is required"),
   slug: z.string().min(1, "Slug is required"),
   description: z.string().optional(),
-  parent_id: z.number().optional(),
+  parent_id: z.number().optional().nullable(),
   is_active: z.boolean().default(true),
   position: z.number().default(0),
 }).omit({

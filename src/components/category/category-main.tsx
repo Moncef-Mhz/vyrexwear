@@ -10,18 +10,23 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table";
+import { useRouter } from "next/navigation";
 
 const CategoriesMain = () => {
+  const router = useRouter();
+  const handleAddCategory = () => {
+    router.push("/admin/categories/new");
+  };
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Categories</h1>
-        <Button className="cursor-pointer">
+        <Button className="cursor-pointer" onClick={handleAddCategory}>
           <Plus />
           Category
         </Button>
       </div>
-      <div className="border rounded-md">
+      <div className="border rounded-md overflow-hidden">
         <Table className="">
           <TableHeader>
             <TableRow className="bg-muted">
