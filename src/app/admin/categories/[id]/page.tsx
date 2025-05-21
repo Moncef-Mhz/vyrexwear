@@ -23,7 +23,7 @@ const Category = async ({ params }: CategoryPageProps) => {
       return <div>Category not found</div>;
     }
 
-    return <div>Update Category: {category.id}</div>;
+    return <CategoryPage category={category} />;
   }
 
   // Fallback

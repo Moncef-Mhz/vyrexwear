@@ -2,7 +2,7 @@
 import { db } from "@/db";
 import { categories } from "@/db/schema/categories";
 import { InsertCategory, NewCategory } from "@/db/schema/categories";
-import { eq } from "drizzle-orm";
+import { and, eq, isNull } from "drizzle-orm";
 
 export const createCategory = async (data: NewCategory) => {
   try {
@@ -11,6 +11,15 @@ export const createCategory = async (data: NewCategory) => {
     // Validate the data
     if (!name || !slug) {
       throw new Error("Name and slug are required");
+    }
+
+    const existingCategory = await db
+      .select()
+      .from(categories)
+      .where(and(eq(categories.slug, slug), isNull(categories.parent_id)));
+
+    if (existingCategory.length > 0) {
+      throw new Error("A root category with this slug already exists");
     }
 
     // Create the category object
@@ -24,7 +33,7 @@ export const createCategory = async (data: NewCategory) => {
     };
 
     // Here you would typically send the newCategory to your API or database
-    const res = db.insert(categories).values(newCategory).returning();
+    const res = await db.insert(categories).values(newCategory).returning();
 
     return { res, success: "Category created successfully" };
   } catch (error) {
@@ -99,4 +108,13 @@ export const getCategoryById = async (id: number) => {
   } catch (error) {
     console.error("Error fetching category:", error);
   }
+};
+
+export const getParentCategories = async () => {
+  const parentCategories = await db
+    .select()
+    .from(categories)
+    .where(isNull(categories.parent_id));
+
+  return parentCategories;
 };

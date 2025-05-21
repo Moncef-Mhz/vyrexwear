@@ -11,14 +11,31 @@ import {
   TableRow,
 } from "../ui/table";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { SelectCategory } from "@/db/schema/categories";
+import { getCategories } from "@/app/actions/categories";
 
 const CategoriesMain = () => {
+  const [categories, setCategories] = useState<SelectCategory[]>([]);
+
   const router = useRouter();
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const res = await getCategories();
+      if (res) {
+        setCategories(res?.res);
+        console.log(res.res);
+      }
+    };
+    fetchCategories();
+  }, []);
+
   const handleAddCategory = () => {
     router.push("/admin/categories/new");
   };
   return (
-    <div className="space-y-2">
+    <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Categories</h1>
         <Button className="cursor-pointer" onClick={handleAddCategory}>
@@ -40,32 +57,25 @@ const CategoriesMain = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            <TableRow className="h-14">
-              <TableCell>1</TableCell>
-              <TableCell>T-shirt</TableCell>
-              <TableCell>Men</TableCell>
-              <TableCell>Active</TableCell>
-              <TableCell>1</TableCell>
-              <TableCell>05/20/2025</TableCell>
-              <TableCell>
-                <div className="flex items-center justify-end">
-                  <Pen className="w-4 h-4" />
-                </div>
-              </TableCell>
-            </TableRow>
-            <TableRow className="h-14">
-              <TableCell>1</TableCell>
-              <TableCell>T-shirt</TableCell>
-              <TableCell>Men</TableCell>
-              <TableCell>Active</TableCell>
-              <TableCell>1</TableCell>
-              <TableCell>05/20/2025</TableCell>
-              <TableCell>
-                <div className="flex items-center justify-end">
-                  <Pen className="w-4 h-4" />
-                </div>
-              </TableCell>
-            </TableRow>
+            {categories.map((category) => (
+              <TableRow key={category.id} className="h-14 even:bg-muted">
+                <TableCell>{category.id}</TableCell>
+                <TableCell>{category.name}</TableCell>
+                <TableCell>{category.parent_id ?? "-"}</TableCell>
+                <TableCell>
+                  {category.is_active ? "Active" : "Inactive"}
+                </TableCell>
+                <TableCell>{category.position}</TableCell>
+                <TableCell>
+                  {new Date(category.created_at).toLocaleDateString()}
+                </TableCell>
+                <TableCell>
+                  <div className="flex items-center justify-end">
+                    <Pen className="w-4 h-4" />
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
           </TableBody>
         </Table>
       </div>
