@@ -27,12 +27,12 @@ import { NavUser } from "./sidebar/user";
 const items = [
   {
     title: "Dashboard",
-    url: "#",
+    url: "/admin",
     icon: LayoutGrid,
   },
   {
     title: "Products",
-    url: "#",
+    url: "/admin/products",
     icon: ShoppingCart,
   },
   {

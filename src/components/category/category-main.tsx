@@ -1,6 +1,6 @@
 "use client";
 
-import { Pen, Plus } from "lucide-react";
+import { Pen, Plus, Trash2 } from "lucide-react";
 import { Button } from "../ui/button";
 import {
   Table,
@@ -13,7 +13,9 @@ import {
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { SelectCategory } from "@/db/schema/categories";
-import { getCategories } from "@/app/actions/categories";
+import { deleteCategory, getCategories } from "@/app/actions/categories";
+import Link from "next/link";
+import { toast } from "sonner";
 
 const CategoriesMain = () => {
   const [categories, setCategories] = useState<SelectCategory[]>([]);
@@ -34,6 +36,17 @@ const CategoriesMain = () => {
   const handleAddCategory = () => {
     router.push("/admin/categories/new");
   };
+
+  const handleDeleteCategory = async (id: number) => {
+    const res = await deleteCategory(id);
+    if (res) {
+      toast.success("Category deleted successfully");
+      setCategories((prev) => prev.filter((cat) => cat.id !== id));
+    } else {
+      toast.error("Failed to delete category");
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -70,8 +83,13 @@ const CategoriesMain = () => {
                   {new Date(category.created_at).toLocaleDateString()}
                 </TableCell>
                 <TableCell>
-                  <div className="flex items-center justify-end">
-                    <Pen className="w-4 h-4" />
+                  <div className="flex items-center gap-4 justify-end">
+                    <Link href={`/admin/categories/${category.id}`}>
+                      <Pen className="w-4 h-4" />
+                    </Link>
+                    <div onClick={() => handleDeleteCategory(category.id)}>
+                      <Trash2 className="text-destructive h-4 w-4 " />
+                    </div>
                   </div>
                 </TableCell>
               </TableRow>
