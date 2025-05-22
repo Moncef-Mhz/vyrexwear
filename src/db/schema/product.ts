@@ -42,11 +42,11 @@ export const InsertProductSchema = createInsertSchema(products, {
   description: z.string().min(1, "Description is required"),
   price: z.number().min(1, "Price must be greater than 0"),
   stock: z.number().min(0, "Stock must be 0 or greater").default(0),
-  view_count: z.number().optional().default(0),
-  reviews_count: z.number().optional().default(0),
+  view_count: z.number().default(0),
+  reviews_count: z.number().default(0),
   is_active: z.boolean().default(true),
 
-  category_id: z.number().min(1, "Category is required"),
+  category_id: z.number(),
 
   sizes: z.array(z.string()).nonempty("At least one size is required"),
   colors: z.array(z.string()).nonempty("At least one color is required"),
@@ -59,6 +59,8 @@ export const InsertProductSchema = createInsertSchema(products, {
     .refine((obj) => Object.keys(obj).length > 0, {
       message: "At least one color-image mapping is required",
     }),
+}).omit({
+  created_at: true,
 });
 
 // Types
