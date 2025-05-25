@@ -11,6 +11,9 @@ import { timestamps } from "@/lib/schema-helpers";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
+export const sizeOptions = ["XS", "S", "M", "L", "XL", "XXL"] as const;
+export type Sizes = (typeof sizeOptions)[number];
+
 export const products = pgTable("products", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   title: varchar("title", { length: 100 }).notNull(),
@@ -26,7 +29,7 @@ export const products = pgTable("products", {
     .references(() => categories.id)
     .notNull(),
 
-  sizes: json("sizes").$type<string[]>(),
+  sizes: json("sizes").$type<Sizes[]>(),
   colors: json("colors").$type<string[]>(),
 
   images_by_color: json("images_by_color").$type<Record<string, string[]>>(),
@@ -41,15 +44,16 @@ export const InsertProductSchema = createInsertSchema(products, {
   title: z.string().min(1, "Title is required"),
   description: z.string().min(1, "Description is required"),
   price: z.number().min(1, "Price must be greater than 0"),
-  stock: z.number().min(0, "Stock must be 0 or greater").default(0),
-  view_count: z.number().default(0),
-  reviews_count: z.number().default(0),
-  is_active: z.boolean().default(true),
 
-  category_id: z.number(),
+  stock: z.number().min(0, "Stock must be 0 or greater"),
+  view_count: z.number(),
+  reviews_count: z.number(),
+  is_active: z.boolean(),
 
-  sizes: z.array(z.string()).nonempty("At least one size is required"),
-  colors: z.array(z.string()).nonempty("At least one color is required"),
+  category_id: z.array(z.number()).optional(),
+
+  sizes: z.array(z.string()),
+  colors: z.array(z.string()),
 
   images_by_color: z
     .record(

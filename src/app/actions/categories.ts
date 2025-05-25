@@ -2,7 +2,8 @@
 import { db } from "@/db";
 import { categories } from "@/db/schema/categories";
 import { InsertCategory, NewCategory } from "@/db/schema/categories";
-import { and, eq, isNull } from "drizzle-orm";
+import { and, eq, isNotNull, isNull } from "drizzle-orm";
+import { alias } from "drizzle-orm/pg-core";
 
 export const createCategory = async (data: NewCategory) => {
   try {
@@ -117,4 +118,37 @@ export const getParentCategories = async () => {
     .where(isNull(categories.parent_id));
 
   return parentCategories;
+};
+
+const parent = alias(categories, "parent");
+
+export const getChildsCategories = async () => {
+  const res = await db
+    .select({
+      id: categories.id,
+      name: categories.name,
+      slug: categories.slug,
+      description: categories.description,
+      parent_id: categories.parent_id,
+      is_active: categories.is_active,
+      position: categories.position,
+      created_at: categories.created_at,
+      updated_at: categories.updated_at,
+      parent: {
+        id: parent.id,
+        name: parent.name,
+        slug: parent.slug,
+        description: parent.description,
+        is_active: parent.is_active,
+        position: parent.position,
+        updated_at: parent.updated_at,
+        created_at: parent.created_at,
+        parent_id: parent.parent_id,
+      },
+    })
+    .from(categories)
+    .leftJoin(parent, eq(categories.parent_id, parent.id))
+    .where(isNotNull(categories.parent_id));
+
+  return { res, success: "Categories fetched successfully" };
 };

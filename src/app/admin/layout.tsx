@@ -24,7 +24,7 @@ const AdminLayout = async ({ children }: { children: ReactNode }) => {
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
-        <header className="flex sticky justify-between top-0 h-14 bg-sidebar shrink-0 items-center gap-2 border-b px-4">
+        <header className="flex z-20 sticky justify-between top-0 h-14 bg-sidebar shrink-0 items-center gap-2 border-b px-4">
           <SidebarTrigger className="-ml-1" />
           <ModeToggle />
         </header>

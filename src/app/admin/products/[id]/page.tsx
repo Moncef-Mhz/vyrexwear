@@ -1,3 +1,4 @@
+import ProductPage from "@/components/product/product-page";
 import { PageParamsProps } from "@/types";
 import React from "react";
 
@@ -5,7 +6,7 @@ const Product = async ({ params }: PageParamsProps) => {
   const { id } = await params;
 
   if (id === "new") {
-    return <div>New Product Page</div>;
+    return <ProductPage />;
   }
 
   const numericId = Number(id);
