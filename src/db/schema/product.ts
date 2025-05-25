@@ -3,6 +3,7 @@ import {
   integer,
   json,
   pgTable,
+  primaryKey,
   text,
   varchar,
 } from "drizzle-orm/pg-core";
@@ -25,10 +26,6 @@ export const products = pgTable("products", {
   stock: integer("stock").default(0),
   is_active: boolean("is_active").default(true),
 
-  category_id: integer("category_id")
-    .references(() => categories.id)
-    .notNull(),
-
   sizes: json("sizes").$type<Sizes[]>(),
   colors: json("colors").$type<string[]>(),
 
@@ -36,6 +33,21 @@ export const products = pgTable("products", {
 
   ...timestamps,
 });
+
+export const productCategories = pgTable(
+  "product_categories",
+  {
+    productId: integer("product_id")
+      .references(() => products.id, { onDelete: "cascade" })
+      .notNull(),
+    categoryId: integer("category_id")
+      .references(() => categories.id, { onDelete: "cascade" })
+      .notNull(),
+  },
+  (table) => ({
+    pk: primaryKey({ columns: [table.productId, table.categoryId] }),
+  })
+);
 
 export type SelectProduct = typeof products.$inferSelect;
 export type InsertProduct = typeof products.$inferInsert;
@@ -49,8 +61,6 @@ export const InsertProductSchema = createInsertSchema(products, {
   view_count: z.number(),
   reviews_count: z.number(),
   is_active: z.boolean(),
-
-  category_id: z.array(z.number()).optional(),
 
   sizes: z.array(z.string()),
   colors: z.array(z.string()),

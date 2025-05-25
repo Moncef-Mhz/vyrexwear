@@ -71,7 +71,7 @@ const CategoriesMain = () => {
           </TableHeader>
           <TableBody>
             {categories.map((category) => (
-              <TableRow key={category.id} className="h-14 even:bg-muted">
+              <TableRow key={category.id} className="h-14 even:bg-muted/20">
                 <TableCell>{category.id}</TableCell>
                 <TableCell>{category.name}</TableCell>
                 <TableCell>{category.parent_id ?? "-"}</TableCell>

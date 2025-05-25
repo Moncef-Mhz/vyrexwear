@@ -1,3 +1,4 @@
+import { getProductbyId } from "@/app/actions/products";
 import ProductPage from "@/components/product/product-page";
 import { PageParamsProps } from "@/types";
 import React from "react";
@@ -11,7 +12,16 @@ const Product = async ({ params }: PageParamsProps) => {
 
   const numericId = Number(id);
   if (!isNaN(numericId)) {
-    return <div>product {id}</div>;
+    const product = await getProductbyId(numericId);
+    if (!product || product.error) {
+      return <div>Product not found</div>;
+    }
+    return (
+      <ProductPage
+        InitailProduct={product.product}
+        InitialCategories={product.categoryRelations}
+      />
+    );
   }
 
   // Fallback

@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+// src/components/multi-select.tsx
+
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import {
@@ -48,7 +51,7 @@ const multiSelectVariants = cva(
     defaultVariants: {
       variant: "default",
     },
-  }
+  },
 );
 
 /**
@@ -78,6 +81,7 @@ interface MultiSelectProps
 
   /** The default selected values when the component mounts. */
   defaultValue?: string[];
+  value?: string[];
 
   /**
    * Placeholder text to be displayed when no values are selected.
@@ -96,6 +100,12 @@ interface MultiSelectProps
    * Optional, defaults to 3.
    */
   maxCount?: number;
+
+  /**
+   * Maximum number of items a user can select.
+   * Optional. If not provided, no limit is enforced.
+   */
+  maxSelect?: number;
 
   /**
    * The modality of the popover. When set to true, interaction with outside elements
@@ -130,41 +140,58 @@ export const MultiSelect = React.forwardRef<
       placeholder = "Select options",
       animation = 0,
       maxCount = 3,
+      value,
+      maxSelect,
       modalPopover = false,
-      //   asChild = false,
+      asChild = false,
       className,
       ...props
     },
-    ref
+    ref,
   ) => {
-    const [selectedValues, setSelectedValues] =
+    const isControlled = value !== undefined;
+    const [internalValue, setInternalValue] =
       React.useState<string[]>(defaultValue);
+    const selectedValues = isControlled ? value : internalValue;
     const [isPopoverOpen, setIsPopoverOpen] = React.useState(false);
     const [isAnimating, setIsAnimating] = React.useState(false);
 
+    const updateSelectedValues = (newValues: string[]) => {
+      if (!isControlled) setInternalValue(newValues);
+      onValueChange(newValues);
+    };
+
     const handleInputKeyDown = (
-      event: React.KeyboardEvent<HTMLInputElement>
+      event: React.KeyboardEvent<HTMLInputElement>,
     ) => {
       if (event.key === "Enter") {
         setIsPopoverOpen(true);
       } else if (event.key === "Backspace" && !event.currentTarget.value) {
         const newSelectedValues = [...selectedValues];
         newSelectedValues.pop();
-        setSelectedValues(newSelectedValues);
+        updateSelectedValues(newSelectedValues);
         onValueChange(newSelectedValues);
       }
     };
 
     const toggleOption = (option: string) => {
-      const newSelectedValues = selectedValues.includes(option)
+      const isSelected = selectedValues.includes(option);
+
+      if (!isSelected && maxSelect && selectedValues.length >= maxSelect) {
+        // Prevent adding more than allowed
+        return;
+      }
+
+      const newSelectedValues = isSelected
         ? selectedValues.filter((value) => value !== option)
         : [...selectedValues, option];
-      setSelectedValues(newSelectedValues);
+
+      updateSelectedValues(newSelectedValues);
       onValueChange(newSelectedValues);
     };
 
     const handleClear = () => {
-      setSelectedValues([]);
+      updateSelectedValues([]);
       onValueChange([]);
     };
 
@@ -174,7 +201,7 @@ export const MultiSelect = React.forwardRef<
 
     const clearExtraOptions = () => {
       const newSelectedValues = selectedValues.slice(0, maxCount);
-      setSelectedValues(newSelectedValues);
+      updateSelectedValues(newSelectedValues);
       onValueChange(newSelectedValues);
     };
 
@@ -183,7 +210,7 @@ export const MultiSelect = React.forwardRef<
         handleClear();
       } else {
         const allValues = options.map((option) => option.value);
-        setSelectedValues(allValues);
+        updateSelectedValues(allValues);
         onValueChange(allValues);
       }
     };
@@ -205,7 +232,7 @@ export const MultiSelect = React.forwardRef<
             )}
           >
             {selectedValues.length > 0 ? (
-              <div className="flex justify-between items-center w-full">
+              <div className="flex w-full items-center justify-between">
                 <div className="flex flex-wrap items-center">
                   {selectedValues.slice(0, maxCount).map((value) => {
                     const option = options.find((o) => o.value === value);
@@ -215,12 +242,12 @@ export const MultiSelect = React.forwardRef<
                         key={value}
                         className={cn(
                           isAnimating ? "animate-bounce" : "",
-                          multiSelectVariants({ variant })
+                          multiSelectVariants({ variant }),
                         )}
                         style={{ animationDuration: `${animation}s` }}
                       >
                         {IconComponent && (
-                          <IconComponent className="h-4 w-4 mr-2" />
+                          <IconComponent className="mr-2 h-4 w-4" />
                         )}
                         {option?.label}
                         <XCircle
@@ -238,7 +265,7 @@ export const MultiSelect = React.forwardRef<
                       className={cn(
                         "bg-transparent text-foreground border-foreground/1 hover:bg-transparent",
                         isAnimating ? "animate-bounce" : "",
-                        multiSelectVariants({ variant })
+                        multiSelectVariants({ variant }),
                       )}
                       style={{ animationDuration: `${animation}s` }}
                     >
@@ -263,9 +290,9 @@ export const MultiSelect = React.forwardRef<
                   />
                   <Separator
                     orientation="vertical"
-                    className="flex min-h-6 h-full"
+                    className="flex h-full min-h-6"
                   />
-                  <ChevronDown className="h-4 mx-2 cursor-pointer text-muted-foreground" />
+                  <ChevronDown className="mx-2 h-4 cursor-pointer text-muted-foreground" />
                 </div>
               </div>
             ) : (
@@ -290,38 +317,50 @@ export const MultiSelect = React.forwardRef<
             />
             <CommandList>
               <CommandEmpty>No results found.</CommandEmpty>
-              <CommandGroup>
-                <CommandItem
-                  key="all"
-                  onSelect={toggleAll}
-                  className="cursor-pointer"
-                >
-                  <div
-                    className={cn(
-                      "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
-                      selectedValues.length === options.length
-                        ? "bg-primary text-primary-foreground"
-                        : "opacity-50 [&_svg]:invisible"
-                    )}
+              {maxSelect === undefined && (maxSelect ?? 2) > 1 && (
+                <CommandGroup className="-mb-2" heading="">
+                  <CommandItem
+                    key="all"
+                    onSelect={toggleAll}
+                    className="cursor-pointer"
                   >
-                    <CheckIcon className="h-4 w-4" />
-                  </div>
-                  <span>(Select All)</span>
-                </CommandItem>
+                    <div
+                      className={cn(
+                        "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
+                        selectedValues.length === options.length
+                          ? "bg-primary text-primary-foreground"
+                          : "opacity-50 [&_svg]:invisible",
+                      )}
+                    >
+                      <CheckIcon className="h-4 w-4" />
+                    </div>
+                    <span>(Select All)</span>
+                  </CommandItem>
+                </CommandGroup>
+              )}
+              <CommandGroup className="">
                 {options.map((option) => {
                   const isSelected = selectedValues.includes(option.value);
+                  const isDisabled =
+                    maxSelect !== undefined &&
+                    !isSelected &&
+                    selectedValues.length >= maxSelect;
+
                   return (
                     <CommandItem
                       key={option.value}
                       onSelect={() => toggleOption(option.value)}
-                      className="cursor-pointer"
+                      className={cn(
+                        "cursor-pointer",
+                        isDisabled && "pointer-events-none opacity-50",
+                      )}
                     >
                       <div
                         className={cn(
                           "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
                           isSelected
                             ? "bg-primary text-primary-foreground"
-                            : "opacity-50 [&_svg]:invisible"
+                            : "opacity-50 [&_svg]:invisible",
                         )}
                       >
                         <CheckIcon className="h-4 w-4" />
@@ -341,19 +380,19 @@ export const MultiSelect = React.forwardRef<
                     <>
                       <CommandItem
                         onSelect={handleClear}
-                        className="flex-1 justify-center cursor-pointer"
+                        className="flex-1 cursor-pointer justify-center"
                       >
                         Clear
                       </CommandItem>
                       <Separator
                         orientation="vertical"
-                        className="flex min-h-6 h-full"
+                        className="flex h-full min-h-6"
                       />
                     </>
                   )}
                   <CommandItem
                     onSelect={() => setIsPopoverOpen(false)}
-                    className="flex-1 justify-center cursor-pointer max-w-full"
+                    className="max-w-full flex-1 cursor-pointer justify-center"
                   >
                     Close
                   </CommandItem>
@@ -365,15 +404,15 @@ export const MultiSelect = React.forwardRef<
         {animation > 0 && selectedValues.length > 0 && (
           <WandSparkles
             className={cn(
-              "cursor-pointer my-2 text-foreground bg-background w-3 h-3",
-              isAnimating ? "" : "text-muted-foreground"
+              "my-2 h-3 w-3 cursor-pointer bg-background text-foreground",
+              isAnimating ? "" : "text-muted-foreground",
             )}
             onClick={() => setIsAnimating(!isAnimating)}
           />
         )}
       </Popover>
     );
-  }
+  },
 );
 
 MultiSelect.displayName = "MultiSelect";

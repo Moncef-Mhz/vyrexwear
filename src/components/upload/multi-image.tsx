@@ -74,7 +74,7 @@ const ImageList = React.forwardRef<HTMLDivElement, ImageListProps>(
               {displayUrl ? (
                 <img
                   className="h-full w-full rounded-md object-cover"
-                  src={displayUrl}
+                  src={fileState.file.name}
                   alt={fileState.file.name}
                 />
               ) : (
@@ -101,8 +101,8 @@ const ImageList = React.forwardRef<HTMLDivElement, ImageListProps>(
                     e.stopPropagation();
                     if (fileState.status === "UPLOADING") {
                       cancelUpload(fileState.key);
-                    } else if (fileState.url) {
-                      removeFile(fileState.key,fileState.url);
+                    } else {
+                      removeFile(fileState.key);
                     }
                   }}
                 >

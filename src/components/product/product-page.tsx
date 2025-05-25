@@ -6,7 +6,7 @@ import {
   sizeOptions,
 } from "@/db/schema/product";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import {
   Form,
@@ -27,14 +27,29 @@ import { COLOR_CLASSES, COLORS } from "@/constant";
 import { useFileUpload } from "@/hooks/use-upload-image";
 import { UploaderProvider } from "../upload/uploader-provider";
 import { ImageUploader } from "../upload/multi-image";
+import { createProduct, updateProduct } from "@/app/actions/products";
+import { useParams, useRouter } from "next/navigation";
+import { ProductRelation } from "@/types/products";
 
 type Props = {
   InitailProduct?: SelectProduct;
+  InitialCategories?: ProductRelation[];
 };
 
-const ProductPage = ({ InitailProduct }: Props) => {
+const ProductPage = ({ InitailProduct, InitialCategories }: Props) => {
   const [categories, setCategories] = useState<ChildCategories[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [categoriesIds, setCategoriesIds] = useState<number[]>(
+    InitialCategories?.map((cat) => cat.categories?.id).filter(
+      (id): id is number => typeof id === "number"
+    ) || []
+  );
+
+  const params = useParams();
+  const router = useRouter();
   const { uploadFile, deleteFile } = useFileUpload();
+
+  const isEditing = typeof Number(params.id) === "number" ? true : false;
 
   const form = useForm<NewProduct>({
     resolver: zodResolver(InsertProductSchema),
@@ -46,11 +61,6 @@ const ProductPage = ({ InitailProduct }: Props) => {
       view_count: InitailProduct?.view_count ?? 0,
       reviews_count: InitailProduct?.reviews_count ?? 0,
       is_active: InitailProduct?.is_active ?? true,
-      category_id: Array.isArray(InitailProduct?.category_id)
-        ? InitailProduct?.category_id
-        : typeof InitailProduct?.category_id === "number"
-        ? [InitailProduct.category_id]
-        : [],
       sizes: InitailProduct?.sizes ?? [],
       colors: InitailProduct?.colors ?? [],
       images_by_color: InitailProduct?.images_by_color ?? {},
@@ -81,12 +91,44 @@ const ProductPage = ({ InitailProduct }: Props) => {
     fetchCategories();
   }, []);
 
-  const onSubmit = async (data: NewProduct) => {
-    console.log("Form submitted", data);
-    // Handle form submission logic here
-  };
+  const onSubmit = useCallback(
+    async (data: NewProduct) => {
+      try {
+        setLoading(true);
 
-  console.log("Form values:", form.getValues("category_id"));
+        if (isEditing) {
+          const res = await updateProduct(Number(params.id), data);
+
+          if (res.error) {
+            console.error("Error updating product:", res.error);
+            return;
+          }
+          if (res.product) {
+            console.log("Product updated successfully:", res.product);
+            router.refresh();
+          }
+        } else {
+          const res = await createProduct(data, categoriesIds);
+
+          if (res.error) {
+            console.error("Error creating product:", res.error);
+            return;
+          }
+          if (res.product) {
+            console.log("Product created successfully:", res.product);
+            router.push(`/admin/products/${res.product.id}`);
+          }
+        }
+      } catch (error) {
+        console.error("Error submitting form:", error);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [categoriesIds, router, params.id, isEditing]
+  );
+
+  console.log(InitailProduct);
 
   return (
     <div className="max-w-3xl mx-auto p-6 space-y-6">
@@ -158,33 +200,22 @@ const ProductPage = ({ InitailProduct }: Props) => {
             />
           </div>
 
-          <FormField
-            control={form.control}
-            name="category_id"
-            render={({ field }) => (
-              <FormItem className="w-full">
-                <FormLabel>Category</FormLabel>
-                <FormControl>
-                  <MultiSelect
-                    value={
-                      Array.isArray(field.value) ? field.value.map(String) : []
-                    }
-                    onValueChange={(selected) => {
-                      console.log("Selected categories:", selected);
-                      field.onChange(selected.map((id) => parseInt(id)));
-                    }}
-                    options={categories.map((cat) => ({
-                      label: `${cat.parent?.name} > ${cat.name}`,
-                      value: cat.id.toString(),
-                    }))}
-                    placeholder="Select categories"
-                    variant={"inverted"}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <div className="w-full space-y-2">
+            <FormLabel>Category</FormLabel>
+            <MultiSelect
+              value={categoriesIds.map((id) => id.toString())}
+              onValueChange={(selected) => {
+                console.log("Selected categories:", selected);
+                setCategoriesIds(selected.map((id) => parseInt(id)));
+              }}
+              options={categories.map((cat) => ({
+                label: `${cat.parent?.name} > ${cat.name}`,
+                value: cat.id.toString(),
+              }))}
+              placeholder="Select categories"
+              variant={"inverted"}
+            />
+          </div>
 
           {/* Sizes */}
           <FormField
@@ -277,6 +308,13 @@ const ProductPage = ({ InitailProduct }: Props) => {
                     });
                   }
                 }}
+                value={(imagesByColor[color] || []).map((url) => ({
+                  file: new File([], url),
+                  key: url,
+                  progress: 100,
+                  status: "COMPLETE" as const,
+                  url,
+                }))}
                 autoUpload
                 key={color}
               >
@@ -288,9 +326,23 @@ const ProductPage = ({ InitailProduct }: Props) => {
             </div>
           ))}
 
-          <Button type="submit" className="w-full">
-            Save Product
-          </Button>
+          <div className="flex justify-end gap-4">
+            <Button
+              type="button"
+              variant={"outline"}
+              disabled={loading}
+              className=""
+              onClick={() => {
+                form.setValue("is_active", false);
+                onSubmit(form.getValues());
+              }}
+            >
+              {loading ? "Saving..." : "Save for later"}
+            </Button>
+            <Button type="submit" disabled={loading} className="">
+              {loading ? "Saving..." : "Save product"}
+            </Button>
+          </div>
         </form>
       </Form>
     </div>
