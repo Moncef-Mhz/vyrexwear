@@ -1,10 +1,10 @@
 "use client";
-import { Plus } from "lucide-react";
+import { EllipsisVertical, Eye, Pen, Plus, Trash2 } from "lucide-react";
 import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { SelectProduct } from "@/db/schema/product";
-import { getProducts } from "@/app/actions/products";
+import { deleteProduct, getProducts } from "@/app/actions/products";
 import {
   Table,
   TableBody,
@@ -14,6 +14,15 @@ import {
 } from "../ui/table";
 import { COLOR_CLASSES } from "@/constant";
 import { formatMoney } from "@/lib/utils";
+import Image from "next/image";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
 
 const ProductMain = () => {
   const [products, setProducts] = useState<SelectProduct[]>([]);
@@ -42,8 +51,30 @@ const ProductMain = () => {
     fetchProducts();
   }, []);
 
+  const handleDeleteProduct = async (id: number) => {
+    try {
+      const res = await deleteProduct(id);
+      if (res.error) {
+        console.error("Error deleting product:", res.error);
+      } else {
+        setProducts((prev) => prev.filter((product) => product.id !== id));
+        console.log("Product deleted successfully.");
+      }
+    } catch (error) {
+      console.error("Error deleting product:", error);
+    }
+  };
+
   const handleAddProduct = () => {
     router.push("/admin/products/new");
+  };
+
+  const handleViewProduct = (id: number) => {
+    router.push(`/shop/products/${id}`);
+  };
+
+  const handleEditProduct = (id: number) => {
+    router.push(`/admin/products/${id}`);
   };
 
   return (
@@ -64,42 +95,83 @@ const ProductMain = () => {
               <TableHead>Sizes</TableHead>
               <TableHead>Colors</TableHead>
               <TableHead>Views</TableHead>
-              <TableHead>Actions</TableHead>
+              <TableHead className="text-end">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {loading ? (
-              <>Loading</>
+              <TableRow>Loading</TableRow>
             ) : (
-              products.map((product) => (
-                <TableRow key={product.id} className="h-14 even:bg-muted/20">
-                  <TableHead>{product.title}</TableHead>
-                  <TableHead>{formatMoney(product.price)}</TableHead>
-                  <TableHead>{(product.sizes ?? []).join(", ")}</TableHead>
-                  <TableHead>
-                    {product.colors?.map((color) => (
-                      <div
-                        key={color}
-                        className={`w-4 h-4 rounded-full outline-2 ${
-                          COLOR_CLASSES[color as keyof typeof COLOR_CLASSES] ??
-                          "bg-white"
-                        }`}
-                      />
-                    ))}
-                  </TableHead>
-                  <TableHead>{product.view_count}</TableHead>
-                  <TableHead>
-                    <Button
-                      variant="outline"
-                      onClick={() =>
-                        router.push(`/admin/products/${product.id}`)
-                      }
-                    >
-                      Edit
-                    </Button>
-                  </TableHead>
-                </TableRow>
-              ))
+              products.map((product) => {
+                const productColors = product.colors?.map((color) => (
+                  <div
+                    key={color}
+                    className={`w-4 h-4 rounded-full outline-2 ${
+                      COLOR_CLASSES[color as keyof typeof COLOR_CLASSES] ??
+                      "bg-white"
+                    }`}
+                  />
+                ));
+
+                const firstImage =
+                  (product.images_by_color &&
+                    Object.values(product.images_by_color)[0]?.[0]) ??
+                  "";
+
+                return (
+                  <TableRow key={product.id} className="h-20 even:bg-muted/20">
+                    <TableHead>
+                      <div className="flex items-center gap-2">
+                        <Image
+                          src={firstImage}
+                          alt={product.title}
+                          width={100}
+                          height={100}
+                          className="w-14 h-14 object-cover rounded"
+                          loading="lazy"
+                        />
+                        {product.title}
+                      </div>
+                    </TableHead>
+                    <TableHead>{formatMoney(product.price)}</TableHead>
+                    <TableHead>{(product.sizes ?? []).join(", ")}</TableHead>
+                    <TableHead>{productColors}</TableHead>
+                    <TableHead>{product.view_count}</TableHead>
+                    <TableHead className="text-end">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant={"ghost"} size={"icon"}>
+                            <EllipsisVertical className="w-4 h-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="w-48 mr-8">
+                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem
+                            onClick={() => handleViewProduct(product.id)}
+                          >
+                            <Eye />
+                            <span>View</span>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => handleEditProduct(product.id)}
+                          >
+                            <Pen />
+                            <span>Edit</span>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => handleDeleteProduct(product.id)}
+                            variant="destructive"
+                          >
+                            <Trash2 />
+                            <span>Delete</span>
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableHead>
+                  </TableRow>
+                );
+              })
             )}
           </TableBody>
         </Table>

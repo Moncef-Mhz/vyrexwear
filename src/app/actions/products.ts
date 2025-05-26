@@ -149,3 +149,36 @@ export const getProducts = async () => {
     return { error: "Internal server error." };
   }
 };
+
+export const deleteProduct = async (id: number) => {
+  try {
+    // Check if product exists
+    const existingProduct = await db
+      .select()
+      .from(products)
+      .where(eq(products.id, id))
+      .limit(1);
+
+    if (existingProduct.length === 0) {
+      return { error: "Product not found." };
+    }
+
+    // Delete product-category relations first
+    await db
+      .delete(productCategories)
+      .where(eq(productCategories.productId, id));
+
+    // Then delete the product itself
+    const result = await db.delete(products).where(eq(products.id, id));
+
+    if (result.rowCount === 0) {
+      return { error: "Failed to delete product." };
+    }
+
+    
+    return { success: "Product deleted successfully." };
+  } catch (error) {
+    console.error("❌ Error deleting product:", error);
+    return { error: "Internal server error." };
+  }
+};
