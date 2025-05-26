@@ -8,6 +8,7 @@ import { deleteProduct, getProducts } from "@/app/actions/products";
 import {
   Table,
   TableBody,
+  TableCell,
   TableHead,
   TableHeader,
   TableRow,
@@ -100,7 +101,9 @@ const ProductMain = () => {
           </TableHeader>
           <TableBody>
             {loading ? (
-              <TableRow>Loading</TableRow>
+              <TableRow>
+                <TableCell>Loading</TableCell>
+              </TableRow>
             ) : (
               products.map((product) => {
                 const productColors = product.colors?.map((color) => (
