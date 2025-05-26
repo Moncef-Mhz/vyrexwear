@@ -1,8 +1,9 @@
 import { getCategoryById } from "@/app/actions/categories";
 import CategoryPage from "@/components/category/category";
-import { PageParamsProps } from "@/types";
 
-const Category = async ({ params }: PageParamsProps) => {
+type params = Promise<{ id: string }>;
+
+const Category = async ({ params }: { params: params }) => {
   const { id } = await params;
 
   if (id === "new") {

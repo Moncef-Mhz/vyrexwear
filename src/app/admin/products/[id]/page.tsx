@@ -1,9 +1,10 @@
 import { getProductbyId } from "@/app/actions/products";
 import ProductPage from "@/components/product/product-page";
-import { PageParamsProps } from "@/types";
 import React from "react";
 
-const Product = async ({ params }: PageParamsProps) => {
+type params = Promise<{ id: string }>;
+
+const Product = async ({ params }: { params: params }) => {
   const { id } = await params;
 
   if (id === "new") {
