@@ -15,3 +15,5 @@ export type ProductRelation = {
     position: number | null;
   } | null;
 };
+
+export type IdParam = Promise<{ id: string }>;

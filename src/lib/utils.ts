@@ -19,3 +19,4 @@ export function formatDate(date: Date | string): string {
 export function formatMoney(amount: number, currency: string = "DA"): string {
   return `${amount.toLocaleString("en-US")} ${currency}`;
 }
+

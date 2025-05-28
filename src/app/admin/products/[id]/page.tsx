@@ -1,10 +1,9 @@
 import { getProductbyId } from "@/app/actions/products";
 import ProductPage from "@/components/product/product-page";
+import { IdParam } from "@/types/products";
 import React from "react";
 
-type params = Promise<{ id: string }>;
-
-const Product = async ({ params }: { params: params }) => {
+const Product = async ({ params }: { params: IdParam }) => {
   const { id } = await params;
 
   if (id === "new") {
