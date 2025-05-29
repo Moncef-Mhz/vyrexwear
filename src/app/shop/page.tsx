@@ -4,6 +4,7 @@ import { SelectProduct } from "@/db/schema/product";
 import { useEffect, useState } from "react";
 import { getProducts } from "../actions/products";
 import ProductCard from "@/components/shop/product-card";
+import { Gutter } from "@/components/global/Gutter";
 
 const ShopPage = () => {
   const [loading, setLoading] = useState(true);
@@ -34,13 +35,13 @@ const ShopPage = () => {
   }
 
   return (
-    <div className="p-6  min-h-screen">
-      <div className="grid gap-10 grid-cols-4">
+    <Gutter className="py-6 min-h-screen">
+      <div className="grid gap-10 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         {products.map((product, index) => (
           <ProductCard product={product} key={index} />
         ))}
       </div>
-    </div>
+    </Gutter>
   );
 };
 export default ShopPage;

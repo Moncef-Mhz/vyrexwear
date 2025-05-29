@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/ui/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { EdgeStoreProvider } from "../lib/edgestore";
+import { CartProvider } from "@/context/cart-context";
 
 const inter = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -28,8 +29,10 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <EdgeStoreProvider>{children}</EdgeStoreProvider>
-          <Toaster />
+          <CartProvider>
+            <EdgeStoreProvider>{children}</EdgeStoreProvider>
+            <Toaster />
+          </CartProvider>
         </ThemeProvider>
       </body>
     </html>

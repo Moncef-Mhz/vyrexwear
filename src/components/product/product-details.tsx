@@ -1,5 +1,5 @@
 "use client";
-import { SelectProduct } from "@/db/schema/product";
+import { SelectProduct, Sizes } from "@/db/schema/product";
 import { Gutter } from "../global/Gutter";
 import {
   Breadcrumb,
@@ -14,17 +14,25 @@ import { useEffect, useState } from "react";
 import { cn, formatMoney } from "@/lib/utils";
 import Image from "next/image";
 import { StarRating } from "../shop/product-card";
-import { COLOR_CLASSES, outlineColorClasses, SIZES } from "@/constant";
+import {
+  COLOR_CLASSES,
+  ColorName,
+  outlineColorClasses,
+  SIZES,
+} from "@/constant";
 import { Button } from "../ui/button";
 import { ScrollArea, ScrollBar } from "../ui/scroll-area";
+import { useCart } from "@/context/cart-context";
 
 const ProductDetails = ({ product }: { product: SelectProduct }) => {
-  const [selectedColor, setSelectedColor] = useState(
-    product.colors?.[0] ?? null
+  const [selectedColor, setSelectedColor] = useState<ColorName>(
+    (product.colors?.[0] as ColorName) ?? "Black"
   );
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  const [selectedSize, setSelectedSize] = useState<Sizes>("M");
   const [quantity, setQuantity] = useState(1);
+
+  const { addToCart, handleOpenCart } = useCart();
 
   const segments = usePathname().split("/").filter(Boolean);
 
@@ -75,6 +83,20 @@ const ProductDetails = ({ product }: { product: SelectProduct }) => {
       setQuantity((prev) => prev - 1);
     }
   };
+
+  const handleAddToCart = () => {
+    if (!product) return;
+
+    addToCart({
+      product: product,
+      color: selectedColor,
+      quantity: quantity,
+      size: selectedSize,
+    });
+
+    handleOpenCart();
+  };
+
   return (
     <Gutter className="flex flex-col py-6 sm:gap-6 gap-4 md:gap-8">
       <Breadcrumb>
@@ -143,7 +165,7 @@ const ProductDetails = ({ product }: { product: SelectProduct }) => {
               {(product.colors ?? []).map((color) => (
                 <button
                   key={color}
-                  onClick={() => setSelectedColor(color)}
+                  onClick={() => setSelectedColor(color as ColorName)}
                   className={cn(
                     `${
                       COLOR_CLASSES[color as keyof typeof COLOR_CLASSES] ??
@@ -212,7 +234,12 @@ const ProductDetails = ({ product }: { product: SelectProduct }) => {
             </div>
 
             {/* Add to cart button */}
-            <Button className="flex-1  h-full text-base">Add to cart</Button>
+            <Button
+              className="flex-1  h-full text-base"
+              onClick={handleAddToCart}
+            >
+              Add to cart
+            </Button>
           </div>
           <div className="flex flex-col gap-2">
             <span className="font-medium">Description</span>
