@@ -24,6 +24,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
+import { Badge } from "../ui/badge";
 
 const ProductMain = () => {
   const [products, setProducts] = useState<SelectProduct[]>([]);
@@ -137,8 +138,18 @@ const ProductMain = () => {
                       </div>
                     </TableHead>
                     <TableHead>{formatMoney(product.price)}</TableHead>
-                    <TableHead>{(product.sizes ?? []).join(", ")}</TableHead>
-                    <TableHead>{productColors}</TableHead>
+                    <TableHead>
+                      <div className="flex gap-2">
+                        {(product.sizes ?? []).map((item) => (
+                          <Badge key={item} variant={"outline"}>
+                            {item}
+                          </Badge>
+                        ))}
+                      </div>
+                    </TableHead>
+                    <TableHead>
+                      <div className="flex gap-2 ">{productColors}</div>
+                    </TableHead>
                     <TableHead>{product.view_count}</TableHead>
                     <TableHead className="text-end">
                       <DropdownMenu>

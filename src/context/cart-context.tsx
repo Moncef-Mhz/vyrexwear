@@ -2,7 +2,13 @@
 
 import { ColorName } from "@/constant";
 import { SelectProduct, Sizes } from "@/db/schema/product";
-import React, { createContext, Dispatch, useContext, useState } from "react";
+import React, {
+  createContext,
+  Dispatch,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
 type CartItem = {
   product: SelectProduct;
@@ -19,6 +25,7 @@ type CartContextType = {
   totalPrice: number;
   addToCart: (item: CartItem) => void;
   removeFromCart: (productId: number, color: ColorName, size: Sizes) => void;
+  addOneToCart: (productId: number, color: ColorName, size: Sizes) => void;
   handleOpenCart: () => void;
   handleCloseCart: () => void;
   removeAllCart: () => void;
@@ -28,9 +35,27 @@ type CartContextType = {
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
+const LOCAL_STORAGE_KEY = "cart-items";
+
 export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [openCart, setOpenCart] = useState(false);
+
+  useEffect(() => {
+    const storedCart = localStorage.getItem(LOCAL_STORAGE_KEY);
+    if (storedCart) {
+      try {
+        setCartItems(JSON.parse(storedCart));
+      } catch (err) {
+        console.error("Failed to parse cart from localStorage:", err);
+        localStorage.removeItem(LOCAL_STORAGE_KEY);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(cartItems));
+  }, [cartItems]);
 
   const addToCart = (item: CartItem) => {
     setCartItems((prev) => {
@@ -74,6 +99,18 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  const addOneToCart = (productId: number, color: ColorName, size: Sizes) => {
+    setCartItems((prev) =>
+      prev.map((item) =>
+        item.product.id === productId &&
+        item.color === color &&
+        item.size === size
+          ? { ...item, quantity: item.quantity + 1 }
+          : item
+      )
+    );
+  };
+
   const removeAllCart = () => {
     setCartItems([]);
   };
@@ -105,6 +142,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
         handleCloseCart,
         openCart,
         setOpenCart,
+        addOneToCart,
         removeAllCart,
       }}
     >

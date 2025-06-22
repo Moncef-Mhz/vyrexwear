@@ -48,7 +48,7 @@ const CartSideBar = () => {
                     <Image
                       src={
                         item.product.images_by_color
-                          ? Object.values(item.product.images_by_color)[0][0]
+                          ? item.product.images_by_color?.[item.color]?.[1]
                           : ""
                       }
                       alt={item.product.title}
