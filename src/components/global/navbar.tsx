@@ -1,14 +1,35 @@
 "use client";
-import { Menu, Search, ShoppingBag, User, X } from "lucide-react";
+import {
+  LogIn,
+  LogOut,
+  Menu,
+  Search,
+  ShieldCheck,
+  ShoppingBag,
+  ShoppingCart,
+  User,
+  UserCircle,
+  X,
+} from "lucide-react";
 import Link from "next/link";
 import { Gutter } from "./Gutter";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { useCart } from "@/context/cart-context";
 import CartSideBar from "./cart";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { authClient } from "@/lib/auth-client";
 
 const AppNavBar = () => {
   const [openMenu, setOpenMenu] = useState(false);
+
+  const { data: session } = authClient.useSession();
 
   const { handleOpenCart, totalItems } = useCart();
 
@@ -17,6 +38,23 @@ const AppNavBar = () => {
 
   return (
     <>
+      {session?.user.role === "admin" && (
+        <Gutter className="w-full h-10 relative bg-background border-b flex items-center justify-between ">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center justify-center h-10 space-x-2">
+              <ShieldCheck className="h-4 w-4" />
+              <span className="text-sm font-medium">Administrator</span>
+              <span className="text-blue-200">•</span>
+              <Link
+                href="/admin"
+                className="text-sm font-medium hover:text-blue-200 transition-colors underline underline-offset-2"
+              >
+                Go to Dashboard
+              </Link>
+            </div>
+          </div>
+        </Gutter>
+      )}
       <Gutter className="w-full h-16 relative bg-background border-b flex items-center justify-between ">
         <ul className="md:flex hidden items-center z-10 gap-6 font-medium text-sm">
           <li className="cursor-pointer">
@@ -53,7 +91,45 @@ const AppNavBar = () => {
             </div>
             <ShoppingBag className="w-5 h-5 cursor-pointer" strokeWidth={1} />
           </div>
-          <User className="w-5 h-5 cursor-pointer" strokeWidth={1} />
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <div className="relative">
+                <User className="w-5 h-5 cursor-pointer" strokeWidth={1} />
+                <span className="sr-only">Open user menu</span>
+              </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56" align="end" forceMount>
+              {!session && (
+                <DropdownMenuItem className="cursor-pointer">
+                  <Link href="/login" className="flex items-center">
+                    <LogIn className="mr-2 h-4 w-4" />
+                    <span>Login</span>
+                  </Link>
+                </DropdownMenuItem>
+              )}
+              {session && (
+                <>
+                  <DropdownMenuItem className="cursor-pointer">
+                    <UserCircle className="mr-2 h-4 w-4" />
+                    <span>Account</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="cursor-pointer">
+                    <ShoppingCart className="mr-2 h-4 w-4" />
+                    <span>Cart</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    className="cursor-pointer"
+                    variant="destructive"
+                    onClick={() => authClient.signOut()}
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Logout</span>
+                  </DropdownMenuItem>
+                </>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </Gutter>
 

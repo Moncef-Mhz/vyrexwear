@@ -1,4 +1,5 @@
 "use client";
+import { createOrder } from "@/app/actions/orders";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -18,6 +19,13 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Table,
   TableBody,
   TableCell,
@@ -26,9 +34,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import { COLOR_CLASSES, ColorName, wilayas } from "@/constant";
+import { COLOR_CLASSES, ColorName, shippingCosts, wilayas } from "@/constant";
 import { useCart } from "@/context/cart-context";
-import { insertOrderSchema, NewOrder } from "@/db/schema/orders";
+import {
+  insertOrderSchema,
+  NewOrder,
+  SimplifiedCartItem,
+} from "@/db/schema/orders";
 import { SelectProduct, Sizes } from "@/db/schema/product";
 import { cn, formatMoney } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -63,13 +75,19 @@ const CheckOutPage = () => {
         address: "",
         commune: "",
         wilaya: "",
+        shippingMethod: "stopdesk",
       },
-      items: cartItems,
+      items: [],
       status: "pending",
+      totalPrice: 0,
+      totalQuantity: 0,
+      shippingCosts: 0,
     },
   });
 
-  const { handleSubmit } = form;
+  const { handleSubmit, watch } = form;
+
+  const shippingMethod = watch("userInfo.shippingMethod");
 
   console.log(form.formState.errors);
 
@@ -81,10 +99,6 @@ const CheckOutPage = () => {
     });
   }, [cartItems, form]);
 
-  const onSubmit = (data: NewOrder) => {
-    console.log("Order submitted:", data);
-  };
-
   function calculateSubtotal(item: {
     product: SelectProduct;
     quantity: number;
@@ -93,6 +107,47 @@ const CheckOutPage = () => {
   }): number {
     return item.product.price * item.quantity;
   }
+
+  const getShippongCost = (wilaya: string) => {
+    const found = shippingCosts.find((item) => item.wilaya === wilaya);
+
+    if (!found) return "N/A";
+    return found[shippingMethod];
+  };
+
+  const onSubmit = (data: NewOrder) => {
+    const simplifiedItems: SimplifiedCartItem[] = cartItems.map((item) => ({
+      productId: Number(item.product.id),
+      title: item.product.title ?? "",
+      price: Number(item.product.price ?? 0),
+      quantity: item.quantity ?? 1,
+      color: item.color,
+      size: item.size,
+      image: item.product.images_by_color?.[item.color]?.[1] ?? "",
+    }));
+
+    const totalQuantity = cartItems.reduce(
+      (sum, item) => sum + item.quantity,
+      0
+    );
+
+    // Ensure shippingCosts is a number or null
+    const shippingCostValue = getShippongCost(selectedWilaya?.name ?? "");
+    const finalData = {
+      ...data,
+      items: simplifiedItems,
+      totalPrice,
+      totalQuantity,
+      shippingCosts:
+        typeof shippingCostValue === "number" ? shippingCostValue : 0,
+    };
+
+    try {
+      createOrder(finalData);
+    } catch (error) {
+      console.error("Failed to create order:", error);
+    }
+  };
 
   return (
     <div className=" divide-x grid grid-cols-3  min-h-screen w-full">
@@ -430,72 +485,7 @@ const CheckOutPage = () => {
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="userInfo.phoneNumber2"
-              render={({ field }) => (
-                <FormItem>
-                  <div className="flex items-center">
-                    <Button
-                      className="shrink-0 rounded-l-sm  rounded-r-none z-10 inline-flex  h-10 items-center py-2.5 px-4 text-sm font-medium text-center text-gray-900 bg-gray-100 border border-gray-300 rounded-s-lg hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700 dark:text-white dark:border-gray-600"
-                      type="button"
-                      variant={"outline"}
-                    >
-                      <svg
-                        width="28px"
-                        height="28px"
-                        viewBox="0 0 36 36"
-                        xmlns="http://www.w3.org/2000/svg"
-                        aria-hidden="true"
-                        role="img"
-                        preserveAspectRatio="xMidYMid meet"
-                        fill="#000000"
-                      >
-                        <g id="SVGRepo_bgCarrier" strokeWidth="0" />
 
-                        <g
-                          id="SVGRepo_tracerCarrier"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-
-                        <g id="SVGRepo_iconCarrier">
-                          <path
-                            fill="#006233"
-                            d="M4 5a4 4 0 0 0-4 4v18a4 4 0 0 0 4 4h14V5H4z"
-                          />
-
-                          <path
-                            fill="#EEE"
-                            d="M32 5H18v26h14a4 4 0 0 0 4-4V9a4 4 0 0 0-4-4z"
-                          />
-
-                          <path
-                            fill="#D20F34"
-                            d="M20 24c-3.315 0-6-2.685-6-6c0-3.314 2.685-6 6-6c1.31 0 2.52.425 3.507 1.138A7.332 7.332 0 0 0 18 10.647A7.353 7.353 0 0 0 10.647 18A7.353 7.353 0 0 0 18 25.354c2.195 0 4.16-.967 5.507-2.492A5.963 5.963 0 0 1 20 24z"
-                          />
-
-                          <path
-                            fill="#D20F34"
-                            d="M25.302 18.23l-2.44.562l-.22 2.493l-1.288-2.146l-2.44.561l1.644-1.888l-1.287-2.147l2.303.98l1.644-1.889l-.22 2.494z"
-                          />
-                        </g>
-                      </svg>
-                      <span className="ml-1">+213</span>
-                    </Button>
-
-                    <Input
-                      type="phone"
-                      {...field}
-                      value={field.value ?? ""}
-                      id="phone-input"
-                      className="block  w-full  h-10 border-l-0 rounded-l-none "
-                      placeholder="792948542"
-                    />
-                  </div>
-                </FormItem>
-              )}
-            />
             <FormField
               control={form.control}
               name="userInfo.wilaya"
@@ -576,6 +566,26 @@ const CheckOutPage = () => {
                 </FormItem>
               )}
             />
+            <FormField
+              control={form.control}
+              name="userInfo.shippingMethod"
+              render={({ field }) => (
+                <FormItem>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select shipping method" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="stopdesk">Stopdesk</SelectItem>
+                      <SelectItem value="domicile">Domicile</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FormItem>
+              )}
+            />
           </div>
           <div className="border-t pt-4 mt-4">
             <div className="flex items-center justify-between my-4">
@@ -586,12 +596,18 @@ const CheckOutPage = () => {
             </div>
             <div className="flex items-center justify-between my-4">
               <h2 className="text-sm font-medium">Shipping</h2>
-              <span className="text-sm text-muted-foreground">N/A</span>
+              <span className="text-sm text-muted-foreground">
+                {getShippongCost(selectedWilaya?.name ?? "")} DA
+              </span>
             </div>
             <div className="flex items-center justify-between my-4">
               <h2 className="text-base font-semibold">Total</h2>
               <span className="text-sm text-muted-foreground">
-                {totalPrice} DA
+                {getShippongCost(selectedWilaya?.name ?? "") !== "N/A"
+                  ? totalPrice +
+                    Number(getShippongCost(selectedWilaya?.name ?? ""))
+                  : totalPrice}{" "}
+                DA
               </span>
             </div>
             <Button className="w-full">Order Now</Button>

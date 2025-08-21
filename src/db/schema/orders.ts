@@ -9,10 +9,11 @@ export type UserInfo = {
   firstName: string;
   lastName: string;
   phoneNumber1: string;
-  phoneNumber2: string;
+  phoneNumber2?: string | null; // ✅ matches zod + db
   wilaya: string;
   commune: string;
   address: string;
+  shippingMethod: "stopdesk" | "domicile";
 };
 
 export type SimplifiedCartItem = {
@@ -34,8 +35,11 @@ export type OrderStatus =
 
 export const orders = pgTable("orders", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  userInfo: json("user_info").$type<UserInfo>(),
+  userInfo: json("user_info").$type<UserInfo>(), // ✅ must exist
   items: json("items").$type<SimplifiedCartItem[]>(),
+  totalPrice: integer("total_price"), // ✅ if you want it
+  totalQuantity: integer("total_quantity"), // ✅
+  shippingCosts: integer("shipping_costs"), // ✅
   status: text("status").$type<OrderStatus>().default("pending"),
   ...timestamps,
 });
@@ -52,16 +56,17 @@ export const insertOrderSchema = createInsertSchema(orders, {
     wilaya: z.string().min(1),
     commune: z.string().min(1),
     address: z.string().min(1),
+    shippingMethod: z.enum(["stopdesk", "domicile"]),
   }),
   items: z.array(
     z.object({
-      productId: z.number(),
-      title: z.string(),
-      price: z.number(),
-      quantity: z.number().min(1),
+      productId: z.number().optional(),
+      title: z.string().optional(),
+      price: z.number().optional(),
+      quantity: z.number().min(1).optional(),
       color: z.string(),
       size: z.string(),
-      image: z.string().url().or(z.literal("")),
+      image: z.string().url().or(z.literal("")).optional(),
     })
   ),
   status: z

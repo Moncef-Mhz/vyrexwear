@@ -1,3 +1,5 @@
+import { DollarSign, Package, ShoppingCart, Users } from "lucide-react";
+
 export const SIZES = ["XS", "S", "M", "L", "XL", "XXL"] as const;
 export const COLORS = [
   "Black",
@@ -509,5 +511,328 @@ export const wilayas = [
     ar_name: "عين قزام",
     longitude: "19.572222",
     latitude: "5.769444",
+  },
+];
+
+export const stats = [
+  {
+    title: "Total Revenue",
+    value: "32000 DA",
+    change: "+20.1%",
+    trend: "up",
+    icon: DollarSign,
+    description: "from last month",
+  },
+  {
+    title: "Orders",
+    value: "2,350",
+    change: "+180.1%",
+    trend: "up",
+    icon: ShoppingCart,
+    description: "from last month",
+  },
+  {
+    title: "Customers",
+    value: "1,234",
+    change: "+19%",
+    trend: "up",
+    icon: Users,
+    description: "from last month",
+  },
+  {
+    title: "Products Sold",
+    value: "573",
+    change: "-4.3%",
+    trend: "down",
+    icon: Package,
+    description: "from last month",
+  },
+];
+
+export const shippingCosts = [
+  {
+    wilaya: "Adrar",
+    stopdesk: 1100,
+    domicile: 1400,
+  },
+  {
+    wilaya: "Chlef",
+    stopdesk: 450,
+    domicile: 850,
+  },
+  {
+    wilaya: "Laghouat",
+    stopdesk: 700,
+    domicile: 1000,
+  },
+  {
+    wilaya: "Oum El Bouaghi",
+    stopdesk: 500,
+    domicile: 850,
+  },
+  {
+    wilaya: "Batna",
+    stopdesk: 500,
+    domicile: 850,
+  },
+  {
+    wilaya: "Béjaïa",
+    stopdesk: 500,
+    domicile: 850,
+  },
+  {
+    wilaya: "Biskra",
+    stopdesk: 600,
+    domicile: 950,
+  },
+  {
+    wilaya: "Béchar",
+    stopdesk: 1100,
+    domicile: 1400,
+  },
+  {
+    wilaya: "Blida",
+    stopdesk: 450,
+    domicile: 700,
+  },
+  {
+    wilaya: "Bouira",
+    stopdesk: 450,
+    domicile: 850,
+  },
+  {
+    wilaya: "Tamanrasset",
+    stopdesk: 1400,
+    domicile: 1800,
+  },
+  {
+    wilaya: "Tébessa",
+    stopdesk: 600,
+    domicile: 950,
+  },
+  {
+    wilaya: "Tlemcen",
+    stopdesk: 500,
+    domicile: 850,
+  },
+  {
+    wilaya: "Tiaret",
+    stopdesk: 500,
+    domicile: 850,
+  },
+  {
+    wilaya: "Tizi Ouzou",
+    stopdesk: 450,
+    domicile: 850,
+  },
+  {
+    wilaya: "Alger",
+    stopdesk: 400,
+    domicile: 500,
+  },
+  {
+    wilaya: "Djelfa",
+    stopdesk: 600,
+    domicile: 900,
+  },
+  {
+    wilaya: "Jijel",
+    stopdesk: 500,
+    domicile: 850,
+  },
+  {
+    wilaya: "Sétif",
+    stopdesk: 450,
+    domicile: 850,
+  },
+  {
+    wilaya: "Saïda",
+    stopdesk: 600,
+    domicile: 900,
+  },
+  {
+    wilaya: "Skikda",
+    stopdesk: 500,
+    domicile: 850,
+  },
+  {
+    wilaya: "Sidi Bel Abbès",
+    stopdesk: 500,
+    domicile: 850,
+  },
+  {
+    wilaya: "Annaba",
+    stopdesk: 500,
+    domicile: 850,
+  },
+  {
+    wilaya: "Guelma",
+    stopdesk: 600,
+    domicile: 900,
+  },
+  {
+    wilaya: "Constantine",
+    stopdesk: 450,
+    domicile: 850,
+  },
+  {
+    wilaya: "Médéa",
+    stopdesk: 450,
+    domicile: 850,
+  },
+  {
+    wilaya: "Mostaganem",
+    stopdesk: 500,
+    domicile: 850,
+  },
+  {
+    wilaya: "M'Sila",
+    stopdesk: 500,
+    domicile: 850,
+  },
+  {
+    wilaya: "Mascara",
+    stopdesk: 600,
+    domicile: 900,
+  },
+  {
+    wilaya: "Ouargla",
+    stopdesk: 800,
+    domicile: 1100,
+  },
+  {
+    wilaya: "Oran",
+    stopdesk: 450,
+    domicile: 850,
+  },
+  {
+    wilaya: "El Bayadh",
+    stopdesk: 800,
+    domicile: 1100,
+  },
+  {
+    wilaya: "Illizi",
+    stopdesk: 1700,
+    domicile: 2000,
+  },
+  {
+    wilaya: "Bordj Bou Arreridj",
+    stopdesk: 450,
+    domicile: 850,
+  },
+  {
+    wilaya: "Boumerdès",
+    stopdesk: 450,
+    domicile: 700,
+  },
+  {
+    wilaya: "El Tarf",
+    stopdesk: 600,
+    domicile: 950,
+  },
+  {
+    wilaya: "Tindouf",
+    stopdesk: 1400,
+    domicile: 1800,
+  },
+  {
+    wilaya: "Tissemsilt",
+    stopdesk: 500,
+    domicile: 850,
+  },
+  {
+    wilaya: "El Oued",
+    stopdesk: 800,
+    domicile: 1100,
+  },
+  {
+    wilaya: "Khenchela",
+    stopdesk: 600,
+    domicile: 900,
+  },
+  {
+    wilaya: "Souk Ahras",
+    stopdesk: 600,
+    domicile: 900,
+  },
+  {
+    wilaya: "Tipaza",
+    stopdesk: 450,
+    domicile: 700,
+  },
+  {
+    wilaya: "Mila",
+    stopdesk: 500,
+    domicile: 850,
+  },
+  {
+    wilaya: "Aïn Defla",
+    stopdesk: 450,
+    domicile: 850,
+  },
+  {
+    wilaya: "Naâma",
+    stopdesk: 800,
+    domicile: 1100,
+  },
+  {
+    wilaya: "Aïn Témouchent",
+    stopdesk: 600,
+    domicile: 900,
+  },
+  {
+    wilaya: "Ghardaïa",
+    stopdesk: 800,
+    domicile: 1100,
+  },
+  {
+    wilaya: "Relizane",
+    stopdesk: 500,
+    domicile: 850,
+  },
+  {
+    wilaya: "Timimoun",
+    stopdesk: 1100,
+    domicile: 1400,
+  },
+  {
+    wilaya: "Ouled Djellal",
+    stopdesk: 700,
+    domicile: 1000,
+  },
+  {
+    wilaya: "Beni Abbes",
+    stopdesk: 1100,
+    domicile: 1400,
+  },
+  {
+    wilaya: "In Salah",
+    stopdesk: 1100,
+    domicile: 1400,
+  },
+  {
+    wilaya: "In Guezzam",
+    stopdesk: 1700,
+    domicile: 2000,
+  },
+  {
+    wilaya: "Touggourt",
+    stopdesk: 800,
+    domicile: 1100,
+  },
+  {
+    wilaya: "Djanet",
+    stopdesk: 1700,
+    domicile: 2000,
+  },
+  {
+    wilaya: "El M'Ghair",
+    stopdesk: 800,
+    domicile: 1100,
+  },
+  {
+    wilaya: "El Meniaa",
+    stopdesk: 1000,
+    domicile: 1300,
   },
 ];
