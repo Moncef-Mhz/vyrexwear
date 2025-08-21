@@ -89,8 +89,6 @@ const CheckOutPage = () => {
 
   const shippingMethod = watch("userInfo.shippingMethod");
 
-  console.log(form.formState.errors);
-
   useEffect(() => {
     // Update form default values when cartItems change
     form.reset({
@@ -115,7 +113,7 @@ const CheckOutPage = () => {
     return found[shippingMethod];
   };
 
-  const onSubmit = (data: NewOrder) => {
+  const onSubmit = async (data: NewOrder) => {
     const simplifiedItems: SimplifiedCartItem[] = cartItems.map((item) => ({
       productId: Number(item.product.id),
       title: item.product.title ?? "",
@@ -143,7 +141,7 @@ const CheckOutPage = () => {
     };
 
     try {
-      createOrder(finalData);
+      await createOrder(finalData);
     } catch (error) {
       console.error("Failed to create order:", error);
     }

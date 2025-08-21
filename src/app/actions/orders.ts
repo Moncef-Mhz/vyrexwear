@@ -61,3 +61,39 @@ export const updateOrderStatus = async (id: number, status: string) => {
     throw new Error("Failed to update order status");
   }
 };
+
+export const getOrders = async () => {
+  try {
+    const allOrders = await db.select().from(orders);
+    return allOrders;
+  } catch (error) {
+    console.error("Error fetching orders:", error);
+    throw new Error("Failed to fetch orders");
+  }
+};
+
+export const getOrderById = async (id: number) => {
+  try {
+    const order = await db.select().from(orders).where(eq(orders.id, id));
+    if (order.length === 0) {
+      throw new Error("Order not found");
+    }
+    return order[0];
+  } catch (error) {
+    console.error("Error fetching order by ID:", error);
+    throw new Error("Failed to fetch order");
+  }
+};
+
+export const deleteOrder = async (id: number) => {
+  try {
+    const res = await db.delete(orders).where(eq(orders.id, id));
+    if (res.rowCount === 0) {
+      throw new Error("Order not found");
+    }
+    return { success: "Order deleted successfully" };
+  } catch (error) {
+    console.error("Error deleting order:", error);
+    throw new Error("Failed to delete order");
+  }
+};

@@ -35,11 +35,14 @@ export type OrderStatus =
 
 export const orders = pgTable("orders", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  userInfo: json("user_info").$type<UserInfo>(), // ✅ must exist
+  userInfo: json("user_info").$type<UserInfo>(),
   items: json("items").$type<SimplifiedCartItem[]>(),
-  totalPrice: integer("total_price"), // ✅ if you want it
-  totalQuantity: integer("total_quantity"), // ✅
-  shippingCosts: integer("shipping_costs"), // ✅
+  totalPrice: integer("total_price"),
+  totalQuantity: integer("total_quantity"),
+  shippingCosts: integer("shipping_costs"),
+  shippingMethod: text("shipping_method")
+    .$type<"stopdesk" | "domicile">()
+    .default("stopdesk"),
   status: text("status").$type<OrderStatus>().default("pending"),
   ...timestamps,
 });
