@@ -134,7 +134,7 @@ const OrderMain = () => {
       <Card className="p-8">
         <CardContent className="text-center space-y-4">
           <div className="w-16 h-16 mx-auto bg-muted rounded-full flex items-center justify-center">
-            <Truck className="w-8 h-8 text-muted-foreground" />
+            <Truck strokeWidth={1} className="w-8 h-8 text-muted-foreground" />
           </div>
           <div>
             <h3 className="text-lg font-semibold">No orders found</h3>

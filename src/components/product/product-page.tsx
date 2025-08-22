@@ -128,8 +128,6 @@ const ProductPage = ({ InitailProduct, InitialCategories }: Props) => {
     [categoriesIds, router, params.id, isEditing]
   );
 
-  console.log(InitailProduct);
-
   return (
     <div className="max-w-3xl mx-auto p-6 space-y-6">
       <Form {...form}>
