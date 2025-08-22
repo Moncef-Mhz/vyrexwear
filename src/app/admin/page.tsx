@@ -1,6 +1,5 @@
 import {
   DashboardCards,
-  DashboardLinkCards,
 } from "@/components/dashboard/cards";
 
 const DashboardPage = () => {
@@ -14,9 +13,6 @@ const DashboardPage = () => {
       <DashboardCards />
       <div className="flex-1 h-full">
         {/* Additional dashboard content can go here, such as charts or tables */}
-      </div>
-      <div>
-        <DashboardLinkCards />
       </div>
     </div>
   );
