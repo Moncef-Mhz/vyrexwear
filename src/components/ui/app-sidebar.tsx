@@ -47,7 +47,7 @@ const items = [
   },
   {
     title: "Users",
-    url: "#",
+    url: "/admin/users",
     icon: Users,
   },
   {
@@ -64,8 +64,6 @@ export function AppSidebar() {
     console.error("Error fetching user session:", error);
     return null;
   }
-
-  console.log("User session:", user);
 
   return (
     <Sidebar collapsible="icon">
