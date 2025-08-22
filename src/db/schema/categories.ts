@@ -22,7 +22,6 @@ export const categories = pgTable(
       (): AnyPgColumn => categories.id
     ),
     is_active: boolean("is_active").default(true),
-    position: integer("position").default(0),
     ...timestamps,
   },
   (table) => {
@@ -41,7 +40,6 @@ export const InsertCategorySchema = createInsertSchema(categories, {
   description: z.string().optional(),
   parent_id: z.number().optional().nullable(),
   is_active: z.boolean().default(true).optional(),
-  position: z.number().default(0).optional(),
 }).omit({
   id: true,
   created_at: true,

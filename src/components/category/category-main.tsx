@@ -38,12 +38,17 @@ const CategoriesMain = () => {
   };
 
   const handleDeleteCategory = async (id: number) => {
-    const res = await deleteCategory(id);
-    if (res) {
-      toast.success("Category deleted successfully");
-      setCategories((prev) => prev.filter((cat) => cat.id !== id));
-    } else {
+    if (!confirm("Are you sure you want to delete this category?")) return;
+
+    try {
+      const res = await deleteCategory(id);
+      if (res) {
+        toast.success("Category deleted successfully");
+        setCategories((prev) => prev.filter((cat) => cat.id !== id));
+      }
+    } catch (error) {
       toast.error("Failed to delete category");
+      console.error("Error deleting category:", error);
     }
   };
 
@@ -62,9 +67,7 @@ const CategoriesMain = () => {
             <TableRow className="bg-muted">
               <TableHead>ID</TableHead>
               <TableHead className="min-w-[250px]">Category</TableHead>
-              <TableHead>Parent</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead>Position</TableHead>
               <TableHead>Created At</TableHead>
               <TableHead className="text-end">Actions</TableHead>
             </TableRow>
@@ -74,11 +77,9 @@ const CategoriesMain = () => {
               <TableRow key={category.id} className="h-14 even:bg-muted/20">
                 <TableCell>{category.id}</TableCell>
                 <TableCell>{category.name}</TableCell>
-                <TableCell>{category.parent_id ?? "-"}</TableCell>
                 <TableCell>
                   {category.is_active ? "Active" : "Inactive"}
                 </TableCell>
-                <TableCell>{category.position}</TableCell>
                 <TableCell>
                   {new Date(category.created_at).toLocaleDateString()}
                 </TableCell>

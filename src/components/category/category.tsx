@@ -20,19 +20,9 @@ import {
   FormMessage,
 } from "../ui/form";
 import { Input } from "../ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../ui/select";
+
 import { Switch } from "../ui/switch";
-import {
-  createCategory,
-  getParentCategories,
-  updateCategory,
-} from "@/app/actions/categories";
+import { createCategory, updateCategory } from "@/app/actions/categories";
 import { Textarea } from "../ui/textarea";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -43,9 +33,6 @@ const CategoryPage = (category: { category?: SelectCategory }) => {
   const cat = category.category;
   const isEditMode = !!cat;
 
-  const [parentCategories, setParentCategories] = useState<SelectCategory[]>(
-    []
-  );
   const [loading, setLoading] = useState(false);
 
   const router = useRouter();
@@ -56,29 +43,12 @@ const CategoryPage = (category: { category?: SelectCategory }) => {
       name: cat?.name ?? "",
       slug: cat?.slug ?? "",
       description: cat?.description || "",
-      parent_id: cat?.parent_id || null,
       is_active: cat?.is_active ?? true,
-      position: cat?.position || 0,
     },
   });
   const { handleSubmit, control } = form;
 
   const watchName = form.watch("name");
-
-  useEffect(() => {
-    try {
-      const fetchCategories = async () => {
-        const res = await getParentCategories();
-        if (res) {
-          setParentCategories(res);
-        }
-      };
-
-      fetchCategories();
-    } catch (error) {
-      console.error("Error fetching categories:", error);
-    }
-  }, []);
 
   useEffect(() => {
     if (!isEditMode || !form.getValues("slug")) {
@@ -103,7 +73,6 @@ const CategoryPage = (category: { category?: SelectCategory }) => {
         description: data.description,
         parent_id: data.parent_id,
         is_active: data.is_active,
-        position: data.position,
       };
 
       if (isEditMode) {
@@ -188,38 +157,6 @@ const CategoryPage = (category: { category?: SelectCategory }) => {
                       {...field}
                     />
                   </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="parent_id"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Parent Category</FormLabel>
-                  <Select
-                    onValueChange={(value) =>
-                      field.onChange(value ? Number.parseInt(value) : null)
-                    }
-                    defaultValue={field.value?.toString()}
-                  >
-                    <FormControl>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select a parent category (optional)" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="0">None</SelectItem>
-                      {parentCategories.map((cat) => (
-                        <SelectItem key={cat.id} value={cat.id.toString()}>
-                          {cat.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-
                   <FormMessage />
                 </FormItem>
               )}

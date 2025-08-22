@@ -7,7 +7,7 @@ import { alias } from "drizzle-orm/pg-core";
 
 export const createCategory = async (data: NewCategory) => {
   try {
-    const { name, slug, description, parent_id, is_active, position } = data;
+    const { name, slug, description, parent_id, is_active } = data;
 
     // Validate the data
     if (!name || !slug) {
@@ -30,7 +30,6 @@ export const createCategory = async (data: NewCategory) => {
       description: description || "",
       parent_id: parent_id != null ? parent_id : undefined,
       is_active: is_active !== undefined ? is_active : true,
-      position: position || 0,
     };
 
     // Here you would typically send the newCategory to your API or database
@@ -47,8 +46,7 @@ export const updateCategory = async (
   data: Partial<NewCategory>
 ) => {
   try {
-    const { name, slug, description, parent_id, is_active, position } =
-      await data;
+    const { name, slug, description, parent_id, is_active } = await data;
 
     // Validate the data
     if (!name && !slug) {
@@ -62,7 +60,6 @@ export const updateCategory = async (
       ...(description !== undefined && { description }),
       ...(parent_id !== undefined && parent_id !== null && { parent_id }),
       ...(is_active !== undefined && { is_active }),
-      ...(position !== undefined && { position }),
     };
 
     // Here you would typically send the updatedCategory to your API or database
@@ -80,9 +77,9 @@ export const updateCategory = async (
 
 export const deleteCategory = async (id: number) => {
   try {
-    const res = await db.delete(categories).where(eq(categories.id, id));
+    await db.delete(categories).where(eq(categories.id, id));
 
-    return { res, success: "Category deleted successfully" };
+    return { success: "Category deleted successfully" };
   } catch (error) {
     console.error("Error deleting category:", error);
   }
@@ -131,7 +128,6 @@ export const getChildsCategories = async () => {
       description: categories.description,
       parent_id: categories.parent_id,
       is_active: categories.is_active,
-      position: categories.position,
       created_at: categories.created_at,
       updated_at: categories.updated_at,
       parent: {
@@ -140,7 +136,6 @@ export const getChildsCategories = async () => {
         slug: parent.slug,
         description: parent.description,
         is_active: parent.is_active,
-        position: parent.position,
         updated_at: parent.updated_at,
         created_at: parent.created_at,
         parent_id: parent.parent_id,
