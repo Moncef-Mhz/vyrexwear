@@ -2,6 +2,7 @@
 import { db } from "@/db";
 import { orders, SimplifiedCartItem, OrderStatus } from "@/db/schema/orders";
 import { NewOrder } from "@/db/schema/orders";
+import { sendTelegramMessage } from "@/lib/telegram";
 import { eq } from "drizzle-orm";
 
 type OrderPayload = NewOrder & {
@@ -29,6 +30,46 @@ export async function createOrder(data: OrderPayload) {
       .returning();
 
     console.log("✅ Order created:", newOrder);
+
+    if (!newOrder) {
+      throw new Error("Order creation failed");
+    }
+
+    const fullName = `${newOrder.userInfo?.firstName} ${newOrder.userInfo?.lastName}`;
+    const phone = `${newOrder.userInfo?.phoneNumber1}${
+      newOrder.userInfo?.phoneNumber2
+        ? " / " + newOrder.userInfo?.phoneNumber2
+        : ""
+    }`;
+
+    const itemsList = newOrder.items
+      ?.map(
+        (item, i) =>
+          `${i + 1}. ${item.title} (${item.color}, ${item.size}) x${
+            item.quantity
+          } - ${item.price}DA`
+      )
+      .join("\n");
+
+    const date = new Date(newOrder.created_at).toLocaleString("fr-DZ", {
+      dateStyle: "short",
+      timeStyle: "short",
+    });
+
+    const message =
+      `🛒 *New Order Received*\n\n` +
+      `📌 Order ID: ${newOrder.id}\n` +
+      `👤 Customer: *${fullName}*\n` +
+      `📞 Phone: ${phone}\n` +
+      `🏠 Address: ${newOrder.userInfo?.address}, ${newOrder.userInfo?.commune}, ${newOrder.userInfo?.wilaya}\n` +
+      `🚚 Shipping: ${newOrder.userInfo?.shippingMethod}\n\n` +
+      `📦 *Items:*\n${itemsList}\n\n` +
+      `💰 Total: ${newOrder.totalPrice}DA\n` +
+      `📦 Quantity: ${newOrder.totalQuantity}\n` +
+      `🚚 Shipping Costs: ${newOrder.shippingCosts}DA\n\n` +
+      `🗓️ Date: ${date}`;
+
+    await sendTelegramMessage(message);
 
     return { success: true, order: newOrder };
   } catch (err) {
