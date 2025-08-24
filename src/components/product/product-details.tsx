@@ -102,7 +102,7 @@ const ProductDetails = ({ product }: { product: SelectProduct }) => {
       <Breadcrumb>
         <BreadcrumbList>{breadcrumbItems}</BreadcrumbList>
       </Breadcrumb>
-      <div className="flex flex-col md:flex-row gap-8">
+      <div className="flex flex-col md:flex-row gap-6">
         <div className="flex sm:flex-row flex-col-reverse md:w-[60%] gap-4 ">
           <ScrollArea>
             <div className="flex sm:flex-col md:w-28  overflow-x-auto   flex-row gap-2 md:max-h-[600px] md:overflow-y-auto md:overflow-x-hidden">
@@ -148,10 +148,12 @@ const ProductDetails = ({ product }: { product: SelectProduct }) => {
         </div>
 
         {/* Product Info */}
-        <div className="flex flex-col gap-6  md:w-[40%]">
-          <h1 className="text-2xl font-bold">{product.title}</h1>
-          <div>
-            <StarRating rating={product.reviews_count ?? 0} />
+        <div className="flex flex-col gap-5  md:w-[40%]">
+          <div className="space-y-2">
+            <h1 className="text-2xl font-bold">{product.title}</h1>
+            <div>
+              <StarRating rating={product.reviews_count ?? 0} />
+            </div>
           </div>
 
           <div className="text-xl font-semibold">
@@ -189,9 +191,9 @@ const ProductDetails = ({ product }: { product: SelectProduct }) => {
           <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between">
               <span className="font-medium">Size</span>
-              <p className="text-sm font-medium underline cusror-pointer text-blue-500 underline-offset-2">
+              {/* <p className="text-sm font-medium underline cusror-pointer text-blue-500 underline-offset-2">
                 See sizing chart
-              </p>
+              </p> */}
             </div>
             <div className="flex flex-wrap gap-4">
               {(SIZES ?? []).map((size) => (
@@ -202,7 +204,7 @@ const ProductDetails = ({ product }: { product: SelectProduct }) => {
                   key={size}
                   disabled={!(product.sizes ?? []).includes(size)}
                   className={cn(
-                    "w-20 h-12 border hover:bg-muted font-medium cursor-pointer rounded-md duration-200 text-sm bg-background text-foreground disabled:cursor-not-allowed",
+                    "sm:w-20 sm:h-12 w-16 h-10 border hover:bg-muted font-medium cursor-pointer rounded-md duration-200 text-sm bg-background text-foreground disabled:cursor-not-allowed",
                     selectedSize === size
                       ? "bg-indigo-500 border-indigo-500 text-white hover:bg-indigo-500"
                       : "border-gray-300"

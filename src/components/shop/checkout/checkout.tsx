@@ -154,7 +154,7 @@ const CheckOutPage = () => {
   };
 
   return (
-    <div className=" divide-x grid grid-cols-3  min-h-screen w-full">
+    <div className=" divide-x lg:grid lg:grid-cols-3 flex flex-col lg:min-h-screen w-full">
       <div className="col-span-2 w-full flex flex-col gap-4 p-6 overflow-y-auto">
         <h2 className="text-2xl font-bold mb-4">Order Summary</h2>
 
@@ -167,7 +167,7 @@ const CheckOutPage = () => {
         ) : (
           <>
             {/* Desktop Table */}
-            <div className="hidden border rounded-sm md:block">
+            <div className=" border rounded-sm ">
               <Table className="w-full">
                 <TableHeader>
                   <TableRow className="border-b">
@@ -390,7 +390,7 @@ const CheckOutPage = () => {
       <Form {...form}>
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="col-span-1 sticky top-0 py-6 px-10  flex flex-col bg-muted h-screen w-full"
+          className="col-span-1 sticky top-0 py-6 px-10  flex flex-col bg-muted h-full w-full"
         >
           <h1 className="text-xl font-semibold">Shipping Details</h1>
           <div className=" flex flex-col gap-4 mt-6 overflow-y-auto">
