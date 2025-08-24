@@ -3,14 +3,19 @@ import { formatMoney } from "@/lib/utils";
 import { Star } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 const ProductCard = ({ product }: { product: SelectProduct }) => {
   const router = useRouter();
+  const [hovered, setHovered] = useState(false);
 
-  const productImage =
-    (product.images_by_color &&
-      Object.values(product.images_by_color)[0]?.[0]) ??
-    "";
+  // Get first and second image (if exists)
+  const images =
+    (product.images_by_color && Object.values(product.images_by_color)[0]) ||
+    [];
+
+  const productImage = images[0] ?? "";
+  const hoverImage = images[1] ?? images[0] ?? "";
 
   const handleClick = () => {
     router.push(`/shop/product/${product.id}`);
@@ -18,27 +23,26 @@ const ProductCard = ({ product }: { product: SelectProduct }) => {
 
   return (
     <div
-      className="w-full h-full cursor-pointer transition"
+      className="w-full h-full group cursor-pointer transition"
       onClick={handleClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
     >
-      <div className="overflow-hidden rounded-md">
+      <div className="overflow-hidden">
         <Image
-          src={productImage}
+          src={hovered ? hoverImage : productImage}
           alt={product.title}
           width={300}
           height={300}
-          className="w-full h-[350px] object-cover transform hover:scale-105 transition duration-200"
+          className="w-full h-[350px] xl:h-[450px] object-cover"
         />
       </div>
-      <div className="mt-2 flex flex-col gap-0">
-        <div className="flex items-center justify-between">
-          <h3 className="text-base  truncate">{product.title}</h3>
+      <div className="mt-2 flex flex-col items-start">
+        <div className="flex items-center">
+          <h3 className="text-base font-medium truncate">{product.title}</h3>
         </div>
         <div>
-          <StarRating rating={product.reviews_count ?? 0} />
-        </div>
-        <div>
-          <span className="text-sm font-bold text-gray-800">
+          <span className="text-sm font-regular text-muted-foreground">
             {formatMoney(product.price)}
           </span>
         </div>

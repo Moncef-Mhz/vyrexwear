@@ -175,7 +175,6 @@ export const deleteProduct = async (id: number) => {
       return { error: "Failed to delete product." };
     }
 
-    
     return { success: "Product deleted successfully." };
   } catch (error) {
     console.error("❌ Error deleting product:", error);

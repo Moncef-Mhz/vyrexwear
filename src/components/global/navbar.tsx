@@ -1,5 +1,6 @@
 "use client";
 import {
+  LayoutDashboard,
   LogIn,
   LogOut,
   Menu,
@@ -25,16 +26,23 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { authClient } from "@/lib/auth-client";
+import Image from "next/image";
+import { useTheme } from "next-themes";
+import { useRouter } from "next/navigation";
 
 const AppNavBar = () => {
   const [openMenu, setOpenMenu] = useState(false);
 
   const { data: session } = authClient.useSession();
+  const { theme } = useTheme();
+  const router = useRouter();
 
   const { handleOpenCart, totalItems } = useCart();
 
   const handleCloseMenu = () => setOpenMenu(false);
   const handleOpenMenu = () => setOpenMenu(true);
+
+  console.log(theme);
 
   return (
     <>
@@ -58,10 +66,10 @@ const AppNavBar = () => {
       <Gutter className="w-full h-16 relative bg-background border-b flex items-center justify-between ">
         <ul className="md:flex hidden items-center z-10 gap-6 font-medium text-sm">
           <li className="cursor-pointer">
-            <Link href={"/shop/categories?gender=men"}>Men</Link>
+            <Link href={"/shop/categories?gender=men"}>Home</Link>
           </li>
           <li className="cursor-pointer">
-            <Link href={"/shop/categories?gender=men"}>Women</Link>
+            <Link href={"/shop/categories?gender=men"}>Shop</Link>
           </li>
           <li className="cursor-pointer">
             <Link href={"/shop/categories"}>Categories</Link>
@@ -77,7 +85,22 @@ const AppNavBar = () => {
 
         <div className="absolute z-0 left-0 top-0 w-full h-full flex items-center justify-center">
           <h1 className="text-xl   font-bold uppercase tracking-wider">
-            <Link href={"/shop"}>Vyrex</Link>
+            <Link href={"/shop"}>
+              <Image
+                src="/assets/vyrexlogo.svg"
+                alt="vyrex"
+                width={100}
+                height={100}
+                className="size-24 object-contain dark:hidden"
+              />
+              <Image
+                src="/assets/vyrexlogodark.svg"
+                alt="vyrex"
+                width={100}
+                height={100}
+                className="size-24 object-contain hidden dark:block"
+              />
+            </Link>
           </h1>
         </div>
         <div className="flex z-10 items-center gap-4">
@@ -86,9 +109,11 @@ const AppNavBar = () => {
             strokeWidth={1}
           />
           <div onClick={handleOpenCart} className="relative">
-            <div className="absolute text-xs text-center -top-2 -right-2 w-4 h-4 rounded-full bg-red-500 text-white">
-              {totalItems > 9 ? 9 : totalItems}
-            </div>
+            {totalItems > 0 && (
+              <div className="absolute text-xs text-center -top-2 -right-2 w-4 h-4 rounded-full bg-red-500 text-white">
+                {totalItems > 9 ? 9 : totalItems}
+              </div>
+            )}
             <ShoppingBag className="w-5 h-5 cursor-pointer" strokeWidth={1} />
           </div>
           <DropdownMenu>
@@ -113,6 +138,15 @@ const AppNavBar = () => {
                     <UserCircle className="mr-2 h-4 w-4" />
                     <span>Account</span>
                   </DropdownMenuItem>
+                  {session.user.role == "admin" && (
+                    <DropdownMenuItem
+                      onClick={() => router.push("/admin")}
+                      className="cursor-pointer"
+                    >
+                      <LayoutDashboard className="mr-2 h-4 w-4" />
+                      <span>Dashboard</span>
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuItem className="cursor-pointer">
                     <ShoppingCart className="mr-2 h-4 w-4" />
                     <span>Cart</span>

@@ -19,10 +19,9 @@ import {
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
-import { getChildsCategories } from "@/app/actions/categories";
+import { getCategories } from "@/app/actions/categories";
 
 import { MultiSelect } from "../ui/multi-select";
-import { ChildCategories } from "@/types/categories";
 import { COLOR_CLASSES, COLORS } from "@/constant";
 import { useFileUpload } from "@/hooks/use-upload-image";
 import { UploaderProvider } from "../upload/uploader-provider";
@@ -30,6 +29,7 @@ import { ImageUploader } from "../upload/multi-image";
 import { createProduct, updateProduct } from "@/app/actions/products";
 import { useParams, useRouter } from "next/navigation";
 import { ProductRelation } from "@/types/products";
+import { SelectCategory } from "@/db/schema/categories";
 
 type Props = {
   InitailProduct?: SelectProduct;
@@ -37,7 +37,7 @@ type Props = {
 };
 
 const ProductPage = ({ InitailProduct, InitialCategories }: Props) => {
-  const [categories, setCategories] = useState<ChildCategories[]>([]);
+  const [categories, setCategories] = useState<SelectCategory[]>([]);
   const [loading, setLoading] = useState(false);
   const [categoriesIds, setCategoriesIds] = useState<number[]>(
     InitialCategories?.map((cat) => cat.categories?.id).filter(
@@ -49,7 +49,7 @@ const ProductPage = ({ InitailProduct, InitialCategories }: Props) => {
   const router = useRouter();
   const { uploadFile, deleteFile } = useFileUpload();
 
-  const isEditing = typeof Number(params.id) === "number" ? true : false;
+  const isEditing = params?.id !== undefined && !isNaN(Number(params.id));
 
   const form = useForm<NewProduct>({
     resolver: zodResolver(InsertProductSchema),
@@ -82,7 +82,7 @@ const ProductPage = ({ InitailProduct, InitialCategories }: Props) => {
 
   useEffect(() => {
     const fetchCategories = async () => {
-      const res = await getChildsCategories();
+      const res = await getCategories();
       if (res) {
         setCategories(res.res);
       }
@@ -128,8 +128,10 @@ const ProductPage = ({ InitailProduct, InitialCategories }: Props) => {
     [categoriesIds, router, params.id, isEditing]
   );
 
+  console.log(isEditing);
+
   return (
-    <div className="max-w-3xl mx-auto p-6 space-y-6">
+    <div className="max-w-3xl mx-auto md:p-6 space-y-6">
       <Form {...form}>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <FormField
@@ -139,7 +141,11 @@ const ProductPage = ({ InitailProduct, InitialCategories }: Props) => {
               <FormItem>
                 <FormLabel>Title</FormLabel>
                 <FormControl>
-                  <Input placeholder="Product title" {...field} />
+                  <Input
+                    className="text-sm"
+                    placeholder="Product title"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -153,7 +159,11 @@ const ProductPage = ({ InitailProduct, InitialCategories }: Props) => {
               <FormItem>
                 <FormLabel>Description</FormLabel>
                 <FormControl>
-                  <Textarea placeholder="Product description" {...field} />
+                  <Textarea
+                    className="text-sm"
+                    placeholder="Product description"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -169,9 +179,13 @@ const ProductPage = ({ InitailProduct, InitialCategories }: Props) => {
                   <FormLabel>Price</FormLabel>
                   <FormControl>
                     <Input
-                      value={field.value}
+                      value={field.value ?? ""}
                       type="number"
-                      onChange={(e) => field.onChange(Number(e.target.value))}
+                      onChange={(e) =>
+                        field.onChange(
+                          e.target.value === "" ? 0 : Number(e.target.value)
+                        )
+                      }
                     />
                   </FormControl>
                   <FormMessage />
@@ -187,9 +201,13 @@ const ProductPage = ({ InitailProduct, InitialCategories }: Props) => {
                   <FormLabel>Stock</FormLabel>
                   <FormControl>
                     <Input
-                      value={field.value}
+                      value={field.value ?? ""}
                       type="number"
-                      onChange={(e) => field.onChange(Number(e.target.value))}
+                      onChange={(e) =>
+                        field.onChange(
+                          e.target.value === "" ? 0 : Number(e.target.value)
+                        )
+                      }
                     />
                   </FormControl>
                   <FormMessage />
@@ -207,7 +225,7 @@ const ProductPage = ({ InitailProduct, InitialCategories }: Props) => {
                 setCategoriesIds(selected.map((id) => parseInt(id)));
               }}
               options={categories.map((cat) => ({
-                label: `${cat.parent?.name} > ${cat.name}`,
+                label: `${cat.name}`,
                 value: cat.id.toString(),
               }))}
               placeholder="Select categories"

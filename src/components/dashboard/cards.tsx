@@ -1,14 +1,7 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import {
-  // ArrowDownRight,
-  // ArrowUpRight,
-  Package,
-  ShoppingCart,
-  TrendingUp,
-  Users,
-} from "lucide-react";
+import { Package, ShoppingCart, TrendingUp, Users } from "lucide-react";
 import { useEffect, useState } from "react";
 import { DashboardStats, getDashboardStats } from "@/app/actions/statistique";
 

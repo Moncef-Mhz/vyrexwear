@@ -48,6 +48,7 @@ import { Check, ChevronDown, Minus, Plus, Trash2 } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 const CheckOutPage = () => {
   const [open, setOpen] = useState(false);
@@ -62,7 +63,8 @@ const CheckOutPage = () => {
     }
   };
 
-  const { cartItems, totalPrice, addOneToCart, removeFromCart } = useCart();
+  const { cartItems, totalPrice, addOneToCart, removeFromCart, removeAllCart } =
+    useCart();
 
   const form = useForm<NewOrder>({
     resolver: zodResolver(insertOrderSchema),
@@ -142,6 +144,10 @@ const CheckOutPage = () => {
 
     try {
       await createOrder(finalData);
+      // Reset the form after successful submission
+      toast.success("Order created successfully!");
+      removeAllCart();
+      form.reset();
     } catch (error) {
       console.error("Failed to create order:", error);
     }
