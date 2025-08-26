@@ -167,7 +167,7 @@ const CheckOutPage = () => {
         ) : (
           <>
             {/* Desktop Table */}
-            <div className=" border rounded-sm ">
+            <div className="hidden md:block border rounded-sm ">
               <Table className="w-full">
                 <TableHeader>
                   <TableRow className="border-b">
@@ -301,39 +301,68 @@ const CheckOutPage = () => {
             </div>
 
             {/* Mobile Cards */}
-            {/* <div className="md:hidden space-y-4">
-              {items.map((item, index) => (
-                <Card key={`${item.product.id}-${item.color}-${item.size}`}>
-                  <CardContent className="p-4">
+            <div className="md:hidden space-y-4">
+              {cartItems.map((item) => (
+                <Card
+                  key={`${item.product.id}-${item.color}-${item.size}`}
+                  className="p-0"
+                >
+                  <CardContent className="p-3 ">
                     <div className="flex gap-4">
-                      <img
-                        src={getProductImage(item) || "/placeholder.svg"}
+                      <Image
+                        src={
+                          item.product.images_by_color
+                            ? item.product.images_by_color?.[item.color]?.[1]
+                            : "/placeholder.svg?height=80&width=80"
+                        }
+                        width={80}
+                        height={80}
                         alt={item.product.title}
                         className="w-20 h-20 object-cover rounded-md flex-shrink-0"
                       />
-                      <div className="flex-1 space-y-2">
+                      <div className="flex-1 space-y-3">
                         <div className="flex justify-between items-start">
-                          <h3 className="font-medium line-clamp-2">
-                            {item.product.title}
-                          </h3>
+                          <div className="flex-1 pr-2">
+                            <h3 className="font-medium line-clamp-2 text-sm">
+                              {item.product.title}
+                            </h3>
+                            <p className="text-xs text-muted-foreground line-clamp-1 mt-1">
+                              {item.product.description}
+                            </p>
+                          </div>
                           <Button
                             variant="ghost"
                             size="icon"
                             className="h-8 w-8 text-destructive hover:text-destructive flex-shrink-0"
-                            onClick={() => onRemoveItem(index)}
+                            onClick={() =>
+                              removeFromCart(
+                                item.product.id,
+                                item.color,
+                                item.size
+                              )
+                            }
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
                         </div>
 
                         <div className="flex gap-2">
-                          <Badge
-                            variant="outline"
-                            className="capitalize text-xs"
-                          >
-                            {item.color}
-                          </Badge>
-                          <Badge variant="outline" className="text-xs">
+                          <div className="flex items-center gap-1">
+                            <div
+                              className={cn(
+                                `${
+                                  COLOR_CLASSES[
+                                    item.color as keyof typeof COLOR_CLASSES
+                                  ] ?? "bg-gray-200"
+                                }`,
+                                "border rounded-full w-4 h-4"
+                              )}
+                            ></div>
+                            <span className="text-xs text-muted-foreground capitalize">
+                              {item.color}
+                            </span>
+                          </div>
+                          <Badge variant="outline" className="text-xs h-5">
                             {item.size}
                           </Badge>
                         </div>
@@ -343,11 +372,12 @@ const CheckOutPage = () => {
                             <Button
                               variant="outline"
                               size="icon"
-                              className="h-7 w-7"
+                              className="h-7 w-7 bg-transparent"
                               onClick={() =>
-                                onUpdateQuantity(
-                                  index,
-                                  Math.max(1, item.quantity - 1)
+                                removeFromCart(
+                                  item.product.id,
+                                  item.color,
+                                  item.size
                                 )
                               }
                               disabled={item.quantity <= 1}
@@ -360,21 +390,27 @@ const CheckOutPage = () => {
                             <Button
                               variant="outline"
                               size="icon"
-                              className="h-7 w-7"
+                              className="h-7 w-7 bg-transparent"
                               onClick={() =>
-                                onUpdateQuantity(index, item.quantity + 1)
+                                addOneToCart(
+                                  item.product.id,
+                                  item.color,
+                                  item.size
+                                )
                               }
-                              disabled={item.quantity >= item.product.stock}
+                              disabled={
+                                item.quantity >= (item.product.stock ?? 0)
+                              }
                             >
                               <Plus className="h-3 w-3" />
                             </Button>
                           </div>
                           <div className="text-right">
-                            <p className="text-sm text-muted-foreground">
-                              {formatPrice(item.product.price)} each
+                            <p className="text-xs text-muted-foreground">
+                              {formatMoney(item.product.price)} each
                             </p>
-                            <p className="font-medium">
-                              {formatPrice(calculateSubtotal(item))}
+                            <p className="font-medium text-sm">
+                              {formatMoney(calculateSubtotal(item))}
                             </p>
                           </div>
                         </div>
@@ -383,7 +419,7 @@ const CheckOutPage = () => {
                   </CardContent>
                 </Card>
               ))}
-            </div> */}
+            </div>
           </>
         )}
       </div>

@@ -24,10 +24,17 @@ export function useFileUpload() {
   const uploadFile = useCallback(
     async (
       file: File,
-      options?: {
+      {
+        replaceTargetUrl,
+        temporary,
+        signal,
+        onProgressChange,
+      }: {
         replaceTargetUrl?: string;
         temporary?: boolean;
-      }
+        signal?: AbortSignal;
+        onProgressChange?: (p: number) => void;
+      } = {}
     ): Promise<UploadResult | null> => {
       setError(null);
       setProgress(0);
@@ -37,9 +44,15 @@ export function useFileUpload() {
       try {
         const res = await edgestore.publicFiles.upload({
           file,
-          options,
-          signal: abortControllerRef.current.signal,
-          onProgressChange: (p) => setProgress(p),
+          options: {
+            replaceTargetUrl,
+            temporary,
+          },
+          signal: signal ?? abortControllerRef.current.signal,
+          onProgressChange: (p) => {
+            setProgress(p);
+            onProgressChange?.(p); // forward to consumer (UploaderProvider)
+          },
         });
 
         setUploading(false);
@@ -55,6 +68,40 @@ export function useFileUpload() {
       }
     },
     [edgestore]
+  );
+
+  const uploadFiles = useCallback(
+    async (
+      files: File[],
+      options?: {
+        replaceTargetUrl?: string;
+        temporary?: boolean;
+      }
+    ): Promise<UploadResult[]> => {
+      setError(null);
+      setProgress(0);
+      setUploading(true);
+
+      const results: UploadResult[] = [];
+
+      try {
+        for (let i = 0; i < files.length; i++) {
+          const file = files[i];
+          const res = await uploadFile(file, options);
+          if (res) results.push(res);
+
+          // update overall progress (rough average)
+          setProgress(Math.round(((i + 1) / files.length) * 100));
+        }
+        setUploading(false);
+        return results;
+      } catch (err: any) {
+        setError(err);
+        setUploading(false);
+        return results;
+      }
+    },
+    [uploadFile]
   );
 
   const cancelUpload = useCallback(() => {
@@ -95,6 +142,7 @@ export function useFileUpload() {
     cancelUpload,
     deleteFile,
     confirmUpload,
+    uploadFiles,
     progress,
     uploading,
     error,

@@ -34,7 +34,7 @@ const ProductCard = ({ product }: { product: SelectProduct }) => {
           alt={product.title}
           width={300}
           height={300}
-          className="w-full h-[350px] xl:h-[450px] object-cover"
+          className="w-full h-[400px] lg:h-[450px] xl:h-[650px] object-cover"
         />
       </div>
       <div className="mt-2 flex flex-col items-start">

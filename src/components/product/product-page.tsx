@@ -47,7 +47,7 @@ const ProductPage = ({ InitailProduct, InitialCategories }: Props) => {
 
   const params = useParams();
   const router = useRouter();
-  const { uploadFile, deleteFile } = useFileUpload();
+  const { deleteFile, uploadFile } = useFileUpload();
 
   const isEditing = params?.id !== undefined && !isNaN(Number(params.id));
 
@@ -71,6 +71,8 @@ const ProductPage = ({ InitailProduct, InitialCategories }: Props) => {
 
   const colors = watch("colors") || [];
   const imagesByColor = watch("images_by_color") || {};
+
+  console.log(imagesByColor);
 
   useEffect(() => {
     if (InitailProduct) {
@@ -294,32 +296,36 @@ const ProductPage = ({ InitailProduct, InitialCategories }: Props) => {
                 {color} Images
               </h4>
               <UploaderProvider
-                uploadFn={async ({ file }) => {
-                  const res = await uploadFile(file);
+                uploadFn={async ({ file, onProgressChange, signal }) => {
+                  const res = await uploadFile(file, {
+                    signal,
+                    onProgressChange,
+                  });
+
                   if (res && res.url) {
-                    console.log("Upload response:", res.url);
-                    // Update imagesByColor state for this color
-                    const currentImages = imagesByColor[color] || [];
+                    const prev = form.getValues("images_by_color");
+                    const currentImages = prev[color] || [];
+
                     setValue("images_by_color", {
-                      ...imagesByColor,
-                      [color]: [...currentImages, res.url],
+                      ...prev,
+                      [color]: [...currentImages, res.url], 
                     });
+
                     return { url: res.url };
                   }
                   throw new Error("Upload failed");
                 }}
                 onFileRemoved={async (url) => {
-                  console.log("Removing file:", url);
                   const res = await deleteFile(url);
-
                   if (res) {
-                    // Remove the image from imagesByColor state for this color
-                    const currentImages = imagesByColor[color] || [];
+                    const prev = form.getValues("images_by_color");
+                    const currentImages = prev[color] || [];
                     const updatedImages = currentImages.filter(
                       (img) => img !== url
                     );
+
                     setValue("images_by_color", {
-                      ...imagesByColor,
+                      ...prev,
                       [color]: updatedImages,
                     });
                   }
@@ -334,10 +340,7 @@ const ProductPage = ({ InitailProduct, InitialCategories }: Props) => {
                 autoUpload
                 key={color}
               >
-                <ImageUploader
-                  maxFiles={4}
-                  maxSize={1024 * 1024 * 4} // 4 MB
-                />
+                <ImageUploader maxFiles={4} maxSize={1024 * 1024 * 4} />
               </UploaderProvider>
             </div>
           ))}
