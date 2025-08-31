@@ -5,21 +5,23 @@ import { ThemeProvider } from "@/components/ui/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { EdgeStoreProvider } from "../lib/edgestore";
 import { CartProvider } from "@/context/cart-context";
+import { AppLayoutClient } from "@/components/global/layout-client";
 
 const inter = Plus_Jakarta_Sans({
   subsets: ["latin"],
   display: "swap",
 });
+
 export const metadata: Metadata = {
   title: "Vyrex Wear",
-  description: "Shop number one in algeria",
+  description: "Shop number one in Algeria",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.className} antialiased`}>
@@ -30,8 +32,10 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <CartProvider>
-            <EdgeStoreProvider>{children}</EdgeStoreProvider>
-            <Toaster />
+            <EdgeStoreProvider>
+              <AppLayoutClient>{children}</AppLayoutClient>
+              <Toaster />
+            </EdgeStoreProvider>
           </CartProvider>
         </ThemeProvider>
       </body>

@@ -36,7 +36,7 @@ const ShopPage = () => {
 
   return (
     <Gutter className="py-6 min-h-screen">
-      <div className="grid gap-10 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 ">
+      <div className="grid gap-2 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 ">
         {products.map((product, index) => (
           <ProductCard product={product} key={index} />
         ))}

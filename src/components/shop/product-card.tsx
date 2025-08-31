@@ -28,13 +28,15 @@ const ProductCard = ({ product }: { product: SelectProduct }) => {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      <div className="overflow-hidden">
+      <div className="relative w-full h-[400px] lg:h-[450px] xl:h-[650px]">
         <Image
           src={hovered ? hoverImage : productImage}
           alt={product.title}
-          width={300}
-          height={300}
-          className="w-full h-[400px] lg:h-[450px] xl:h-[650px] object-cover"
+          fill
+          className="object-cover"
+          sizes="(max-width: 768px) 100vw,
+           (max-width: 1200px) 50vw,
+           33vw"
         />
       </div>
       <div className="mt-2 flex flex-col items-start">

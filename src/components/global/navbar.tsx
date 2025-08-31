@@ -30,6 +30,13 @@ import Image from "next/image";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
 
+const navLinks = [
+  { name: "Home", href: "/" },
+  { name: "Shop", href: "/shop" },
+  { name: "Categories", href: "/shop/categories" },
+  { name: "Collections", href: "/shop/collections" },
+];
+
 const AppNavBar = () => {
   const [openMenu, setOpenMenu] = useState(false);
 
@@ -63,20 +70,18 @@ const AppNavBar = () => {
           </div>
         </Gutter>
       )}
-      <Gutter className="w-full h-16 relative bg-background border-b flex items-center justify-between ">
-        <ul className="md:flex hidden items-center z-10 gap-6 font-medium text-sm">
-          <li className="cursor-pointer">
-            <Link href={"/shop/categories?gender=men"}>Home</Link>
-          </li>
-          <li className="cursor-pointer">
-            <Link href={"/shop/categories?gender=men"}>Shop</Link>
-          </li>
-          <li className="cursor-pointer">
-            <Link href={"/shop/categories"}>Categories</Link>
-          </li>
-          <li className="cursor-pointer">
-            <Link href={"/shop/collections"}>Collections</Link>
-          </li>
+      <Gutter className="w-full h-16 relative bg-background  flex items-center justify-between ">
+        <ul className="md:flex hidden items-center z-10 gap-6 ">
+          {navLinks.map((link) => (
+            <li key={link.name}>
+              <Link
+                href={link.href}
+                className="hover:text-primary transition-colors font-medium text-base"
+              >
+                {link.name}
+              </Link>
+            </li>
+          ))}
         </ul>
 
         <div className="block md:hidden z-10" onClick={handleOpenMenu}>

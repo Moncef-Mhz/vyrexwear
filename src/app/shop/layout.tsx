@@ -1,4 +1,3 @@
-import AppNavBar from "@/components/global/navbar";
 import { Metadata } from "next";
 import { ReactNode } from "react";
 
@@ -8,11 +7,6 @@ export const metadata: Metadata = {
 };
 
 const ShopLayout = async ({ children }: { children: ReactNode }) => {
-  return (
-    <main>
-      <AppNavBar />
-      {children}
-    </main>
-  );
+  return <main>{children}</main>;
 };
 export default ShopLayout;
