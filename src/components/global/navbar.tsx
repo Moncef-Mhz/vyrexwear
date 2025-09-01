@@ -27,7 +27,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { authClient } from "@/lib/auth-client";
 import Image from "next/image";
-import { useTheme } from "next-themes";
+// import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
 
 const navLinks = [
@@ -41,7 +41,7 @@ const AppNavBar = () => {
   const [openMenu, setOpenMenu] = useState(false);
 
   const { data: session } = authClient.useSession();
-  const { theme } = useTheme();
+  // const { theme } = useTheme();
   const router = useRouter();
 
   const { handleOpenCart, totalItems } = useCart();

@@ -3,7 +3,6 @@
 import { SelectProduct } from "@/db/schema/product";
 import { useEffect, useState } from "react";
 import { getProducts } from "../actions/products";
-import ProductCard from "@/components/shop/product-card";
 import { Gutter } from "@/components/global/Gutter";
 import { displayItems } from "@/components/home/latest-product";
 
