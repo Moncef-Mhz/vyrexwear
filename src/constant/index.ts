@@ -836,3 +836,29 @@ export const shippingCosts = [
     domicile: 1300,
   },
 ];
+
+export const categoryList =[{
+  id:1,
+  title:'Shirts',
+  description:'A shirt is a cloth garment for the upper body. Originally an undergarment worn exclusively',
+  link:'/shop/categories/shirts',
+  images:'/assets/categories/shirt.png'
+},{
+  id:2,
+  title:'Pants',
+  description:'A shirt is a cloth garment for the upper body. Originally an undergarment worn exclusively',
+  link:'/shop/categories/shirts',
+  images:'/assets/categories/shirt.png'
+},{
+  id:3,
+  title:'Hoodies',
+  description:'A shirt is a cloth garment for the upper body. Originally an undergarment worn exclusively',
+  link:'/shop/categories/shirts',
+  images:'/assets/categories/shirt.png'
+},{
+  id:4,
+  title:'Shorts',
+  description:'A shirt is a cloth garment for the upper body. Originally an undergarment worn exclusively',
+  link:'/shop/categories/shorts',
+  images:'/assets/categories/short.png'
+},]

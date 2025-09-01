@@ -41,7 +41,7 @@ export default LatestProduct;
 
 export const displayItems = (products: SelectProduct[]) => {
   return (
-    <div className="grid gap-2 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 ">
+    <div className="grid md:gap-2 gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 ">
       {products.map((product, index) => (
         <ProductCard product={product} key={index} />
       ))}

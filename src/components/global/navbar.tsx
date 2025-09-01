@@ -27,7 +27,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { authClient } from "@/lib/auth-client";
 import Image from "next/image";
-// import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
 
 const navLinks = [
@@ -41,7 +40,6 @@ const AppNavBar = () => {
   const [openMenu, setOpenMenu] = useState(false);
 
   const { data: session } = authClient.useSession();
-  // const { theme } = useTheme();
   const router = useRouter();
 
   const { handleOpenCart, totalItems } = useCart();
@@ -87,24 +85,22 @@ const AppNavBar = () => {
         </div>
 
         <div className="absolute z-0 left-0 top-0 w-full h-full flex items-center justify-center">
-          <h1 className="text-xl   font-bold uppercase tracking-wider">
-            <Link href={"/shop"}>
-              <Image
-                src="/assets/vyrexlogo.svg"
-                alt="vyrex"
-                width={100}
-                height={100}
-                className="size-24 object-contain dark:hidden"
-              />
-              <Image
-                src="/assets/vyrexlogodark.svg"
-                alt="vyrex"
-                width={100}
-                height={100}
-                className="size-24 object-contain hidden dark:block"
-              />
-            </Link>
-          </h1>
+          <Link href={"/"}>
+            <Image
+              src="/assets/vyrexlogo.svg"
+              alt="vyrex"
+              width={100}
+              height={100}
+              className="size-24 object-contain dark:hidden"
+            />
+            <Image
+              src="/assets/vyrexlogodark.svg"
+              alt="vyrex"
+              width={100}
+              height={100}
+              className="size-24 object-contain hidden dark:block"
+            />
+          </Link>
         </div>
         <div className="flex z-10 items-center gap-4">
           <Search
@@ -120,7 +116,7 @@ const AppNavBar = () => {
             <ShoppingBag className="w-5 h-5 cursor-pointer" strokeWidth={1} />
           </div>
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
+            <DropdownMenuTrigger asChild className="hidden md:block">
               <div className="relative">
                 <User className="w-5 h-5 cursor-pointer" strokeWidth={1} />
                 <span className="sr-only">Open user menu</span>
@@ -183,51 +179,48 @@ const AppNavBar = () => {
       {/* Sidebar Menu */}
       <aside
         className={cn(
-          "fixed top-0 left-0 z-50 h-full w-64 bg-white shadow-md transform transition-transform duration-300",
+          "fixed top-0 left-0 z-50 h-full w-64 bg-white text-muted shadow-md transform transition-transform duration-300",
           openMenu ? "translate-x-0" : "-translate-x-full"
         )}
       >
         {/* Close Button */}
-        <div className="flex items-center justify-between px-4 py-4 border-b">
-          <h2 className="text-lg font-semibold">Vyrex</h2>
+        <div className="flex items-center justify-between px-4  border-b">
+          <Link href={"/"}>
+            <Image
+              src="/assets/vyrexlogo.svg"
+              alt="vyrex"
+              width={100}
+              height={100}
+              className="size-16 object-contain dark:block"
+            />
+            <Image
+              src="/assets/vyrexlogodark.svg"
+              alt="vyrex"
+              width={100}
+              height={100}
+              className="size-16 object-contain hidden dark:hidden"
+            />
+          </Link>
           <button onClick={handleCloseMenu}>
             <X className="w-6 h-6" />
           </button>
         </div>
 
         {/* Mobile Links */}
-        <ul className="flex flex-col gap-4 p-4 text-base">
-          <li>
-            <Link href="/shop/categories?gender=men" onClick={handleCloseMenu}>
-              Men
-            </Link>
-          </li>
-          <li>
-            <Link
-              href="/shop/categories?gender=women"
-              onClick={handleCloseMenu}
-            >
-              Women
-            </Link>
-          </li>
-          <li>
-            <Link href="/shop/categories" onClick={handleCloseMenu}>
-              Categories
-            </Link>
-          </li>
-          <li>
-            <Link href="/shop/collections" onClick={handleCloseMenu}>
-              Collections
-            </Link>
-          </li>
+        <ul className="flex flex-col  gap-4 p-4 text-base">
+          {navLinks.map((link) => (
+            <li key={link.name}>
+              <Link
+                href={link.href}
+                className="hover:text-primary  transition-colors font-normal text-base"
+              >
+                {link.name}
+              </Link>
+            </li>
+          ))}
           <li>
             <Link href="/account" onClick={handleCloseMenu}>
               Account
-            </Link>
-          </li>
-          <li>
-            <Link href="/cart" onClick={handleCloseMenu}>
-              Cart
             </Link>
           </li>
         </ul>

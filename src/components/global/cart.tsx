@@ -22,6 +22,7 @@ const CartSideBar = () => {
 
   const handleCheckOut = () => {
     router.push("/shop/checkout");
+    setOpenCart(false);
   };
 
   return (
