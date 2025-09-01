@@ -28,7 +28,7 @@ const ProductCard = ({ product }: { product: SelectProduct }) => {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      <div className="relative w-full h-[400px] lg:h-[450px] xl:h-[650px]">
+      <div className="relative w-full h-[400px] lg:h-[450px] xl:h-[500px] 2xl:h-[650px]">
         <Image
           src={hovered ? hoverImage : productImage}
           alt={product.title}

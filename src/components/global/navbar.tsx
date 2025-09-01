@@ -49,8 +49,6 @@ const AppNavBar = () => {
   const handleCloseMenu = () => setOpenMenu(false);
   const handleOpenMenu = () => setOpenMenu(true);
 
-  console.log(theme);
-
   return (
     <>
       {session?.user.role === "admin" && (
@@ -76,7 +74,7 @@ const AppNavBar = () => {
             <li key={link.name}>
               <Link
                 href={link.href}
-                className="hover:text-primary transition-colors font-medium text-base"
+                className="hover:text-primary transition-colors font-normal text-base"
               >
                 {link.name}
               </Link>

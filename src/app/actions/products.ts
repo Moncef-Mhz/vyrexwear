@@ -150,6 +150,20 @@ export const getProducts = async () => {
   }
 };
 
+export const getLatestProducts = async () => {
+  try {
+    const productList = await db
+      .select()
+      .from(products)
+      .orderBy(desc(products.created_at)).limit(3);
+
+    return { products: productList };
+  } catch (error) {
+    console.error("❌ Error fetching products:", error);
+    return { error: "Internal server error." };
+  }
+};
+
 export const deleteProduct = async (id: number) => {
   try {
     // Check if product exists
@@ -181,3 +195,4 @@ export const deleteProduct = async (id: number) => {
     return { error: "Internal server error." };
   }
 };
+
