@@ -5,7 +5,7 @@ import { Button } from "../ui/button";
 const Hero = () => {
   return (
     <div>
-      <div className=" relative w-full rounded-lg lg:h-[calc(100vh-15vh)] overflow-hidden">
+      <div className="relative w-full rounded-lg lg:h-[calc(100vh-10vh)] overflow-hidden">
         <Image
           src={"/assets/hero.jpg"}
           alt="hero"

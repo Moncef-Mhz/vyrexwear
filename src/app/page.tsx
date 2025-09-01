@@ -2,15 +2,17 @@
 
 import { Gutter } from "@/components/global/Gutter";
 import Hero from "@/components/home/hero";
-import { Button } from "@/components/ui/button";
-import Image from "next/image";
+import LatestProduct from "@/components/home/latest-product";
+// import ProductCategories from "@/components/home/product-categories";
 
 export default function Home() {
   return (
-    <main className="w-full">
-      <Gutter>
+    <main className="w-full space-y-14">
+      <Gutter className="space-y-14">
         <Hero />
+        <LatestProduct />
       </Gutter>
+      {/* <ProductCategories /> */}
     </main>
   );
 }

@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { getProducts } from "../actions/products";
 import ProductCard from "@/components/shop/product-card";
 import { Gutter } from "@/components/global/Gutter";
+import { displayItems } from "@/components/home/latest-product";
 
 const ShopPage = () => {
   const [loading, setLoading] = useState(true);
@@ -35,13 +36,7 @@ const ShopPage = () => {
   }
 
   return (
-    <Gutter className="py-6 min-h-screen">
-      <div className="grid gap-2 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 ">
-        {products.map((product, index) => (
-          <ProductCard product={product} key={index} />
-        ))}
-      </div>
-    </Gutter>
+    <Gutter className="py-6 min-h-screen">{displayItems(products)}</Gutter>
   );
 };
 export default ShopPage;
