@@ -4,7 +4,6 @@ import { Gutter } from "@/components/global/Gutter";
 import Hero from "@/components/home/hero";
 import LatestProduct from "@/components/home/latest-product";
 import ProductCategories from "@/components/home/product-categories";
-import { ScreenFitText } from "@/components/ui/fit-text";
 
 export default function Home() {
   return (
@@ -14,7 +13,6 @@ export default function Home() {
         <LatestProduct />
       </Gutter>
       <div className="space-y-0">
-        <ScreenFitText />
         <ProductCategories />
       </div>
     </main>
