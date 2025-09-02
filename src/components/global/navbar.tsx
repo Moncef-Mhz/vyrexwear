@@ -28,6 +28,8 @@ import {
 import { authClient } from "@/lib/auth-client";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import SearchOverlay from "./search-overlay";
+import { useTheme } from "next-themes";
 
 const navLinks = [
   { name: "Home", href: "/" },
@@ -38,6 +40,9 @@ const navLinks = [
 
 const AppNavBar = () => {
   const [openMenu, setOpenMenu] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+
+  const { theme } = useTheme();
 
   const { data: session } = authClient.useSession();
   const router = useRouter();
@@ -46,6 +51,9 @@ const AppNavBar = () => {
 
   const handleCloseMenu = () => setOpenMenu(false);
   const handleOpenMenu = () => setOpenMenu(true);
+
+  const handleOpenSearch = () => setSearchOpen(true);
+  const handleCloseSearch = () => setSearchOpen(false);
 
   return (
     <>
@@ -81,7 +89,7 @@ const AppNavBar = () => {
         </ul>
 
         <div className="block md:hidden z-10" onClick={handleOpenMenu}>
-          <Menu />
+          <Menu strokeWidth={1} />
         </div>
 
         <div className="absolute z-0 left-0 top-0 w-full h-full flex items-center justify-center">
@@ -104,8 +112,9 @@ const AppNavBar = () => {
         </div>
         <div className="flex z-10 items-center gap-4">
           <Search
-            className="w-5 h-5 cursor-pointer hidden md:block"
+            className="w-5 h-5 cursor-pointer "
             strokeWidth={1}
+            onClick={handleOpenSearch}
           />
           <div onClick={handleOpenCart} className="relative">
             {totalItems > 0 && (
@@ -179,8 +188,11 @@ const AppNavBar = () => {
       {/* Sidebar Menu */}
       <aside
         className={cn(
-          "fixed top-0 left-0 z-50 h-full w-64 bg-white text-muted shadow-md transform transition-transform duration-300",
-          openMenu ? "translate-x-0" : "-translate-x-full"
+          "fixed top-0 left-0 z-50 h-full w-64 bg-white  shadow-md transform transition-transform duration-300",
+          openMenu ? "translate-x-0" : "-translate-x-full",
+          theme === "light"
+            ? "text-muted-foreground hover:text-muted-foreground/80"
+            : "text-muted hover:text-muted/80"
         )}
       >
         {/* Close Button */}
@@ -202,7 +214,7 @@ const AppNavBar = () => {
             />
           </Link>
           <button onClick={handleCloseMenu}>
-            <X className="w-6 h-6" />
+            <X className="w-6 h-6" strokeWidth={1} />
           </button>
         </div>
 
@@ -226,6 +238,7 @@ const AppNavBar = () => {
         </ul>
       </aside>
       <CartSideBar />
+      <SearchOverlay isOpen={searchOpen} onClose={handleCloseSearch} />
     </>
   );
 };

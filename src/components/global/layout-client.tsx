@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import AppNavBar from "@/components/global/navbar";
+import { Footer } from "./footer";
 
 export function AppLayoutClient({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -13,6 +14,7 @@ export function AppLayoutClient({ children }: { children: React.ReactNode }) {
     <>
       {!isAdminPage && <AppNavBar />}
       <main>{children}</main>
+      {!isAdminPage && <Footer />}
     </>
   );
 }
