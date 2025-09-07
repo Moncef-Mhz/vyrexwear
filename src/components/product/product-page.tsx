@@ -38,6 +38,7 @@ type Props = {
 
 const ProductPage = ({ InitailProduct, InitialCategories }: Props) => {
   const [categories, setCategories] = useState<SelectCategory[]>([]);
+  const [collections, setCollections] = useState<SelectCategory[]>([]);
   const [loading, setLoading] = useState(false);
   const [categoriesIds, setCategoriesIds] = useState<number[]>(
     InitialCategories?.map((cat) => cat.categories?.id).filter(
@@ -72,8 +73,6 @@ const ProductPage = ({ InitailProduct, InitialCategories }: Props) => {
   const colors = watch("colors") || [];
   const imagesByColor = watch("images_by_color") || {};
 
-  console.log(imagesByColor);
-
   useEffect(() => {
     if (InitailProduct) {
       Object.entries(InitailProduct).forEach(([key, value]) => {
@@ -92,6 +91,17 @@ const ProductPage = ({ InitailProduct, InitialCategories }: Props) => {
 
     fetchCategories();
   }, []);
+
+  useEffect(() => {
+    const fetchCollections = async () => {
+      const res = await getCategories();
+      if (res) {
+        setCollections(res.res);
+      }
+    };
+    fetchCollections();
+  }, []);
+  console.log(collections);
 
   const onSubmit = useCallback(
     async (data: NewProduct) => {
@@ -129,8 +139,6 @@ const ProductPage = ({ InitailProduct, InitialCategories }: Props) => {
     },
     [categoriesIds, router, params.id, isEditing]
   );
-
-  console.log(isEditing);
 
   return (
     <div className="max-w-3xl mx-auto md:p-6 space-y-6">
@@ -308,7 +316,7 @@ const ProductPage = ({ InitailProduct, InitialCategories }: Props) => {
 
                     setValue("images_by_color", {
                       ...prev,
-                      [color]: [...currentImages, res.url], 
+                      [color]: [...currentImages, res.url],
                     });
 
                     return { url: res.url };

@@ -10,7 +10,8 @@ import { ProductRelation } from "@/types/products";
 
 export const createProduct = async (
   formData: NewProduct,
-  category_id?: number[]
+  category_id?: number[],
+  collection_id?: number[],
 ) => {
   try {
     const validated = InsertProductSchema.safeParse(formData);
@@ -59,6 +60,7 @@ export const createProduct = async (
       const categoryValues = category_id.map((categoryId: number) => ({
         productId: insertedProduct.id,
         categoryId,
+        collection_id,
       }));
 
       await db.insert(productCategories).values(categoryValues);

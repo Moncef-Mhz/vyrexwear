@@ -7,14 +7,12 @@ import ProductCategories from "@/components/home/product-categories";
 
 export default function Home() {
   return (
-    <main className="w-full space-y-8 md:space-y-0">
+    <main className="w-full space-y-8 md:space-y-14">
       <Gutter className="space-y-8 md:space-y-14">
         <Hero />
         <LatestProduct />
       </Gutter>
-      <div className="space-y-0">
-        <ProductCategories />
-      </div>
+      <ProductCategories />
     </main>
   );
 }

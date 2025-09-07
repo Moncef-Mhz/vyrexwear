@@ -11,6 +11,7 @@ import { categories } from "./categories";
 import { timestamps } from "@/lib/schema-helpers";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
+import { collections } from "./collections";
 
 export const sizeOptions = ["XS", "S", "M", "L", "XL", "XXL"] as const;
 export type Sizes = (typeof sizeOptions)[number];
@@ -43,6 +44,8 @@ export const productCategories = pgTable(
     categoryId: integer("category_id")
       .references(() => categories.id, { onDelete: "cascade" })
       .notNull(),
+    collectionId: integer("collection_id")
+      .references(() => collections.id, { onDelete: "cascade" })
   },
   (table) => ({
     pk: primaryKey({ columns: [table.productId, table.categoryId] }),
